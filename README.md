@@ -19,5 +19,10 @@ mkdir -p build && cd build && cmake .. && cmake --build .
 ./VisCos
 ```
 
-
+# TODO
+ * create filter to compute temperature [paraview]
+ * create filter which scales the points to their actual location (via cosmological scale factor 'a') [paraview]
+ * create histogram for the types of particles
+ * create filter which takes data from UI and filters particles based on their type [CPP]
+ 
 
