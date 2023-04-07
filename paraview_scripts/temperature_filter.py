@@ -1,10 +1,9 @@
-table = inputs[0].GetBlock(0)
-polydata = inputs[0].GetBlock(1)
+polydata = inputs[0]
 
-output.ShallowCopy(inputs[0].VTKObject)
+output.ShallowCopy(polydata.VTKObject)
 
-time = table.GetRow(0)
-z = time.GetValue(0).ToFloat()
+timestep = polydata.GetInformation().Get(output.DATA_TIME_STEP())
+z = 200 * (1 - timestep / 625)
 
 uu = polydata.GetPointData().GetArray("uu")
 
@@ -19,6 +18,4 @@ for i in range(0, numPoints):
     this_uu = uu.GetTuple1(i)
     temperature.InsertNextValue(4.8e5 * this_uu / (1 + z)**3)
 
-polydata.GetPointData().AddArray(temperature)
-
-output.RemoveBlock(0)
+output.GetPointData().AddArray(temperature)
