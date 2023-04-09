@@ -21,10 +21,11 @@ find_package(VTK COMPONENTS
   FiltersSources
   InteractionStyle
   InteractionWidgets
-
 )
 
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE src/main.cxx
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE
+               ./src/main.cxx
+               ./src/processing/CalculateTemperatureFilter.cxx
                ./src/data/Loader.cxx)
 
 target_link_libraries(${PROJECT_NAME} ${VTK_LIBRARIES})
