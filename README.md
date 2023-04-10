@@ -21,12 +21,15 @@ mkdir -p build && cd build && cmake .. && cmake --build .
 
 # TODO
  * create filter which scales the points to their actual location (via cosmological scale factor 'a') [CPP]
+    * fix camera position and zoom away as time progresses (scale with a) [CPP]
  * create histogram for the types of particles [paraview]
     * visualize this histogram over time
  * create filter which takes data from UI and filters particles based on their type [CPP]
     * first create particle filter in CPP
  
 # DONE
+ * create legend for particle color [CPP]
+ * create filter to compute temperature [CPP]
  * create filter which scales the points to their actual location (via cosmological scale factor 'a') [paraview]
  * create slider to select timestep [CPP]
  * create filter which takes data from UI and filters particles based on their type [paraview]
