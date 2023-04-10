@@ -152,7 +152,6 @@ int main(int argc, char *argv[]) {
   params temperatureFilterParams;
   temperatureFilterParams.data = displaySourcePolyData;
   temperatureFilterParams.filter = temperatureFilter;
-  temperatureFilterParams.temp_lut = lut;
   temperatureFilterParams.mapper = dataMapper;
 
   temperatureFilter->SetExecuteMethod(CalculateTemperature,

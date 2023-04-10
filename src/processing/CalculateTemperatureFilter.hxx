@@ -1,10 +1,9 @@
-#include <vtkPolyDataMapper.h>
-#include <vtkPolyData.h>
-#include <vtkProgrammableFilter.h>
+class vtkPolyData;
+class vtkPolyDataMapper;
+class vtkProgrammableFilter;
 
 struct params {
   vtkPolyData *data;
-  vtkLookupTable *temp_lut;
   vtkProgrammableFilter *filter;
   vtkPolyDataMapper *mapper;
 };

@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include <cmath> // for pow
 #include <vtkDataArray.h>
 #include <vtkDoubleArray.h>
@@ -7,9 +9,9 @@
 #include <vtkPointData.h>
 #include <vtkPoints.h>   // for vtkPoints
 #include <vtkPolyData.h> // for vtkPolyData
+#include <vtkPolyDataMapper.h>
 #include <vtkProgrammableFilter.h>
 #include <vtkType.h> // for vtkIdType
-#include <vtkLookupTable.h>
 
 #include "CalculateTemperatureFilter.hxx"
 
@@ -37,7 +39,6 @@ void CalculateTemperature(void *arguments) {
 
   double range[2];
   temp->GetRange(range);
-  input->temp_lut->SetRange(range);
   input->mapper->SetScalarRange(range);
   printf("Range is from %lf to %lf\n", range[0], range[1]);
   input->filter->GetPolyDataOutput()->ShallowCopy(input->data);
