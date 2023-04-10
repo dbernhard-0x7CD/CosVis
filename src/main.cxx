@@ -41,6 +41,7 @@
 
 #include "data/Loader.h"
 #include "processing/CalculateTemperatureFilter.hxx"
+#include "interactive/KeyPressEvents.hxx"
 
 namespace fs = std::filesystem;
 
@@ -201,19 +202,15 @@ int main(int argc, char *argv[]) {
   renderer->AddActor(actor);
   renderer->SetBackground(colors->GetColor3d("BkgColor").GetData());
 
-  // Set actor to Trackball (like in paraview)
-  vtkNew<vtkInteractorStyleSwitch> style;
-  style->SetCurrentStyleToTrackballActor();
-
   vtkNew<vtkSliderRepresentation3D> sliderRep;
   sliderRep->SetMinimumValue(1.0);
   sliderRep->SetMaximumValue(625);
   sliderRep->SetValue((double)active);
   sliderRep->SetTitleText("Timestep");
   sliderRep->GetPoint1Coordinate()->SetCoordinateSystemToDisplay();
-  sliderRep->GetPoint1Coordinate()->SetValue(40, 50, 1);
+  sliderRep->GetPoint1Coordinate()->SetValue(0.4, 0.3);
   sliderRep->GetPoint2Coordinate()->SetCoordinateSystemToDisplay();
-  sliderRep->GetPoint2Coordinate()->SetValue(200, 50, 1);
+  sliderRep->GetPoint2Coordinate()->SetValue(0.3, 0.3);
 
   vtkNew<vtkSliderWidget> sliderWidget;
   sliderWidget->SetInteractor(renderWindowInteractor);
@@ -243,9 +240,22 @@ int main(int argc, char *argv[]) {
   // Register callback
   sliderWidget->AddObserver(vtkCommand::InteractionEvent, callback);
 
+  vtkNew<vtkCamera> camera;
+  float scale = 50;
+  camera->SetPosition(scale * 3.24, scale * 2.65, scale * 4.09);
+  camera->SetFocalPoint(scale * 0.51, scale * 0.71, scale * 0.78);
+  camera->SetFocalDisk(1.0);
+  camera->SetEyeAngle(2);
+  camera->SetEyeAngle(30);
+  camera->SetFocalDistance(0.0);
+  camera->SetViewUp(-0.27, 0.91, -0.31);
+
+  vtkNew<KeyPressInteractorStyle> style;
+  style->camera = camera;
   renderWindowInteractor->SetInteractorStyle(style);
   renderWindowInteractor->SetRenderWindow(renderWindow);
 
+  renderer->SetActiveCamera(camera);
   // This starts the event loop and as a side effect causes an initial render.
   renderWindow->Render();
 

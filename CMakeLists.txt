@@ -24,9 +24,10 @@ find_package(VTK COMPONENTS
 )
 
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE
-               ./src/main.cxx
-               ./src/processing/CalculateTemperatureFilter.cxx
-               ./src/data/Loader.cxx)
+  ./src/main.cxx
+  ./src/processing/CalculateTemperatureFilter.cxx
+  ./src/interactive/KeyPressEvents.cxx
+  ./src/data/Loader.cxx)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 
