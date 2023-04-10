@@ -4,7 +4,7 @@ set(PROJECT_NAME VisCos)
 
 project(${PROJECT_NAME})
 
-find_package(VTK COMPONENTS 
+find_package(VTK COMPONENTS
   CommonColor
   CommonCore
   CommonDataModel
