@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 
-set(CMAKE_C_COMPILER /usr/bin/gcc)
-set(CMAKE_CXX_COMPILER /usr/bin/g++)
-
 set(PROJECT_NAME VisCos)
 
 project(${PROJECT_NAME})
