@@ -28,6 +28,8 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE
                ./src/processing/CalculateTemperatureFilter.cxx
                ./src/data/Loader.cxx)
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+
 target_link_libraries(${PROJECT_NAME} ${VTK_LIBRARIES})
 vtk_module_autoinit(
   TARGETS VisCos
