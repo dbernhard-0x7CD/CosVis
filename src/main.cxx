@@ -1,42 +1,51 @@
-#include <array>
+#include <bits/chrono.h> // for filesystem
 #include <filesystem>
 #include <iostream>
-#include <list>
-#include <regex>
+#include <map> // for map, operator!=
+#include <stdio.h> // for printf
+#include <stdlib.h>
 #include <string>
+#include <utility> // for pair
 
 #include <vtkActor.h>
 #include <vtkCamera.h>
+#include <vtkColor.h>      // for vtkColor3d
+#include <vtkCommand.h>    // for vtkCommand
+#include <vtkCoordinate.h> // for vtkCoordinate
 #include <vtkCylinderSource.h>
+#include <vtkDataArray.h> // for vtkDataArray
 #include <vtkGlyph2D.h>
+#include <vtkGlyph3D.h>               // for vtkGlyph3D
+#include <vtkInteractorStyleSwitch.h> // for vtkInteractorSt...
 #include <vtkInteractorStyleTrackball.h>
+#include <vtkLookupTable.h>
 #include <vtkNamedColors.h>
 #include <vtkNew.h>
+#include <vtkPointData.h>
 #include <vtkPointSource.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkPolyDataReader.h>
+#include <vtkProgrammableFilter.h>
 #include <vtkProperty.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
-#include <vtkSmartPointer.h>
-
-#include <vtkPolyDataReader.h>
-#include <vtkXMLPolyDataReader.h>
-
+#include <vtkScalarBarActor.h>
+#include <vtkScalarBarWidget.h>
+#include <vtkSliderRepresentation.h> // for vtkSliderRepres...
 #include <vtkSliderRepresentation3D.h>
 #include <vtkSliderWidget.h>
+#include <vtkSmartPointer.h>
+#include <vtkXMLPolyDataReader.h>
 
 #include "data/Loader.h"
+#include "processing/CalculateTemperatureFilter.hxx"
 
 namespace fs = std::filesystem;
 
 namespace {
-// The callback does the work.
-// The callback keeps a pointer to the sphere whose resolution is
-// controlled. After constructing the callback, the program sets the
-// SphereSource of the callback to
-// the object to be controlled.
+
 class vtkSliderCallback : public vtkCommand {
 public:
   vtkSliderCallback(){};
@@ -54,7 +63,12 @@ public:
     return new vtkSliderCallback(displayData, readers);
   }
 
-  virtual void Execute(vtkObject *caller, unsigned long, void*) {
+  /*
+   Updates the data to match the data at timestep set by the caller which is
+   a vtkSliderWidget.
+   Updates the displayData.
+  */
+  virtual void Execute(vtkObject *caller, unsigned long, void *) {
     vtkSliderWidget *sliderWidget = reinterpret_cast<vtkSliderWidget *>(caller);
     double dvalue = reinterpret_cast<vtkSliderRepresentation *>(
                         sliderWidget->GetRepresentation())
@@ -91,7 +105,7 @@ int main(int argc, char *argv[]) {
   std::map<int, fs::__cxx11::path> files =
       load_cosmology_dataset(data_folder_path);
 
-  printf("Loaded %d files.\n", files.size());
+  printf("Loaded %lu files.\n", files.size());
 
   std::map<int, vtkXMLPolyDataReader *> dataset_readers;
   for (auto path : files) {
@@ -108,26 +122,56 @@ int main(int argc, char *argv[]) {
   vtkNew<vtkPolyData> displaySourcePolyData;
   vtkNew<vtkNamedColors> colors;
   vtkNew<vtkPointSource> ptSource;
+  vtkNew<vtkPolyDataMapper> dataMapper;
 
-  int active = 8;
+  // active timestep
+  int active = 0;
 
   // Set the background color.
   colors->SetColor("BkgColor", background);
+
+  // LUT for coloring the particles
+  vtkNew<vtkLookupTable> lut;
+
+  lut->SetHueRange(0.0, 0.667);
+  lut->SetAlphaRange(0.2, 0.7);
+  // lut->SetTableRange(1.1, 11.4);
+  lut->SetNumberOfColors(256);
+  // TODO: we should probably move to a logarithm scale
+  // lut->SetScaleToLog10();
+  lut->Build();
 
   // Set the active reader and get its output to be the polydata
   activeReader = dataset_readers.at(active);
   activeReader->Update();
   displaySourcePolyData->ShallowCopy(activeReader->GetOutput());
 
+  vtkNew<vtkProgrammableFilter> temperatureFilter;
+  temperatureFilter->SetInputData(displaySourcePolyData);
+
+  params temperatureFilterParams;
+  temperatureFilterParams.data = displaySourcePolyData;
+  temperatureFilterParams.filter = temperatureFilter;
+  temperatureFilterParams.temp_lut = lut;
+  temperatureFilterParams.mapper = dataMapper;
+
+  temperatureFilter->SetExecuteMethod(CalculateTemperature,
+                                      &temperatureFilterParams);
+  temperatureFilter->Update();
+
   vtkNew<vtkGlyph3D> glyph3D;
   glyph3D->SetSourceConnection(ptSource->GetOutputPort());
-  glyph3D->SetInputData(displaySourcePolyData);
+  glyph3D->SetInputConnection(temperatureFilter->GetOutputPort());
   glyph3D->Update();
 
   // The mapper is responsible for pushing the geometry into the graphics
   // library. It may also do color mapping, if scalars or other attributes are
   // defined.
-  vtkNew<vtkPolyDataMapper> dataMapper;
+  dataMapper->SetLookupTable(lut);
+  dataMapper->ScalarVisibilityOn();
+  dataMapper->SelectColorArray("Temperature");
+  dataMapper->SetScalarModeToUsePointFieldData();
+  dataMapper->InterpolateScalarsBeforeMappingOn();
   dataMapper->SetInputConnection(glyph3D->GetOutputPort());
 
   // The actor is a grouping mechanism: besides the geometry (mapper), it
@@ -135,8 +179,8 @@ int main(int argc, char *argv[]) {
   // Here we set its color and rotate it around the X and Y axes.
   vtkNew<vtkActor> actor;
   actor->SetMapper(dataMapper);
-  actor->GetProperty()->SetColor(colors->GetColor4d("white").GetData());
   actor->GetProperty()->SetOpacity(0.5);
+  actor->SetDragable(1);
 
   // The renderer generates the image
   // which is then displayed on the render window.
@@ -164,8 +208,8 @@ int main(int argc, char *argv[]) {
 
   vtkNew<vtkSliderRepresentation3D> sliderRep;
   sliderRep->SetMinimumValue(1.0);
-  sliderRep->SetMaximumValue(313);
-  sliderRep->SetValue(0.0);
+  sliderRep->SetMaximumValue(625);
+  sliderRep->SetValue((double)active);
   sliderRep->SetTitleText("Timestep");
   sliderRep->GetPoint1Coordinate()->SetCoordinateSystemToDisplay();
   sliderRep->GetPoint1Coordinate()->SetValue(40, 50, 1);
@@ -177,11 +221,27 @@ int main(int argc, char *argv[]) {
   sliderWidget->SetRepresentation(sliderRep);
   sliderWidget->SetAnimationModeToAnimate();
 
-  // Create the callback; I do not know how to pass displayData and readers via a constructor
+  // Scalar bar for the particle colors
+  vtkNew<vtkScalarBarActor> scalarBar;
+  scalarBar->SetOrientationToHorizontal();
+  scalarBar->SetLookupTable(lut);
+  scalarBar->SetPosition2(0.2, 1.5);
+  scalarBar->SetPosition(1, 1.5);
+  scalarBar->SetWidth(2);
+
+  // create the scalarBarWidget
+  vtkNew<vtkScalarBarWidget> scalarBarWidget;
+  scalarBarWidget->SetInteractor(renderWindowInteractor);
+  scalarBarWidget->SetScalarBarActor(scalarBar);
+  scalarBarWidget->On();
+
+  // Create the callback; I do not know how to pass displayData and readers via
+  // a constructor
   vtkNew<vtkSliderCallback> callback;
   callback.GetPointer()->displayData = displaySourcePolyData.GetPointer();
   callback.GetPointer()->readers = &dataset_readers;
 
+  // Register callback
   sliderWidget->AddObserver(vtkCommand::InteractionEvent, callback);
 
   renderWindowInteractor->SetInteractorStyle(style);

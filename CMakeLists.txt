@@ -7,8 +7,11 @@ project(${PROJECT_NAME})
 find_package(VTK COMPONENTS 
   CommonColor
   CommonCore
+  CommonDataModel
+  FiltersProgrammable
   IOXML
   InteractionStyle
+  RenderingAnnotation
   RenderingContextOpenGL2
   RenderingCore
   RenderingFreeType

@@ -20,6 +20,7 @@ Time steps are taken linearly in terms of the cosmological scale factor, a. This
 
 Equation for derived quantity:
 temperature T = 4.8e5 * uu / (1+z)^3 [Kelvin]
+  * from 0.0 to 284700908882.20465
 
 a = 1/(1+z)
 => a * (1 + z) = 1
