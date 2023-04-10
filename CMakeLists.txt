@@ -23,7 +23,7 @@ find_package(VTK COMPONENTS
   InteractionWidgets
 )
 
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE
+add_executable(${PROJECT_NAME}
   ./src/main.cxx
   ./src/processing/CalculateTemperatureFilter.cxx
   ./src/interactive/KeyPressEvents.cxx
