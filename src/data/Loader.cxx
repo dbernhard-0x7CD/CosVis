@@ -1,4 +1,4 @@
-#include <bits/chrono.h>
+//#include <bits/chrono.h>
 #include <cstdlib> // for atoi
 #include <filesystem>
 #include <map>
@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
-namespace fs = std::filesystem;
+namespace fs = std::__fs::filesystem;
 
-std::map<int, fs::__cxx11::path>
+std::map<int, std::__fs::filesystem::path>
 load_cosmology_dataset(std::string data_folder_path) {
   fs::path folder{data_folder_path};
 
@@ -19,7 +19,7 @@ load_cosmology_dataset(std::string data_folder_path) {
   }
 
   const std::regex vtk_cosmo_file(".*Full\\.cosmo\\.([\\d]{3})\\.vtp$");
-  std::map<int, fs::__cxx11::path> ts_to_path;
+  std::map<int, std::__fs::filesystem::path> ts_to_path;
 
   std::cmatch base_match;
   for (auto const &dir_entry : fs::directory_iterator{folder}) {

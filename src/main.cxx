@@ -1,4 +1,4 @@
-#include <bits/chrono.h> // for filesystem
+//#include <bits/chrono.h> // for filesystem
 #include <filesystem>
 #include <iostream>
 #include <map> // for map, operator!=
@@ -43,7 +43,7 @@
 #include "processing/CalculateTemperatureFilter.hxx"
 #include "interactive/KeyPressEvents.hxx"
 
-namespace fs = std::filesystem;
+namespace fs = std::__fs::filesystem;
 
 namespace {
 
@@ -93,7 +93,7 @@ public:
 } // namespace
 
 // Some program constants
-const std::string background("#2a2e32");
+const std::string background("#121111");
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
   std::string data_folder_path;
   data_folder_path = argv[1];
 
-  std::map<int, fs::__cxx11::path> files =
+  std::map<int, std::__fs::filesystem::path> files =
       load_cosmology_dataset(data_folder_path);
 
   printf("Loaded %lu files.\n", files.size());
