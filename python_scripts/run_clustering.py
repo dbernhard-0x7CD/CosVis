@@ -66,9 +66,11 @@ cluster_indices = numpy_to_vtk(labels)
 
 output = vtk.vtkPolyData()
 output.SetPoints(points)
+
+ids = reader.GetOutput().GetPointData().GetArray("id")
+output.GetPointData().AddArray(ids)
 output.GetPointData().AddArray(cluster_indices)
 
-# print(type(labels))
 writer.SetInputData(output)
 writer.Write()
 
