@@ -27,7 +27,7 @@ python ./python_scripts/run_clustering.py
 # Running
 
 ```
-./VisCos
+./VisCos [PATH_TO_DATA_FOLDER]
 ```
 
 # TODO
