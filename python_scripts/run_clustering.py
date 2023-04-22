@@ -63,6 +63,7 @@ dbscan = DBSCAN(eps=epsilon, min_samples=min_samples)
 labels = dbscan.fit_predict(coordinates)
 
 cluster_indices = numpy_to_vtk(labels)
+cluster_indices.SetName("cluster_id")
 
 output = vtk.vtkPolyData()
 output.SetPoints(points)
