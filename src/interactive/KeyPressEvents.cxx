@@ -47,6 +47,34 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
+  if (key == "Down") {
+    double pt[3];
+    double fpt[3];
+    camera->GetPosition(pt);
+    camera->GetFocalPoint(fpt);
+
+    double up[] = {0, 0, 0};
+    double vec[3];
+    double newPt[3];
+    double newFpt[3];
+
+    vtkMath::Subtract(pt, fpt, vec); // vec <- fpt - pt
+
+    vtkMath::Normalize(vec);
+    vec[0] *= 3;
+    vec[1] *= 3;
+    vec[2] *= 3;
+    vtkMath::Add(pt, vec, newPt);
+    vtkMath::Add(fpt, vec, newFpt);
+
+    camera->SetPosition(newPt);
+    camera->SetFocalPoint(newFpt);
+    camera->Modified();
+
+    renderWindow->Render();
+    return;
+  }
+
   if (key == "Left") {
     double pt[3];
     double fpt[3];
