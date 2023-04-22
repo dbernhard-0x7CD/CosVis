@@ -34,7 +34,7 @@
 #include <vtkScalarBarActor.h>
 #include <vtkScalarBarWidget.h>
 #include <vtkSliderRepresentation.h> // for vtkSliderRepres...
-#include <vtkSliderRepresentation3D.h>
+#include <vtkSliderRepresentation2D.h>
 #include <vtkSliderWidget.h>
 #include <vtkSmartPointer.h>
 #include <vtkXMLPolyDataReader.h>
@@ -81,6 +81,8 @@ public:
     vtkXMLPolyDataReader *activeReader;
     activeReader = this->readers->at(val);
     activeReader->Update();
+    reinterpret_cast<vtkSliderRepresentation *>(
+                        sliderWidget->GetRepresentation())->SetValue((double)val);
 
     this->displayData->ShallowCopy(activeReader->GetOutput());
 
@@ -134,7 +136,7 @@ int main(int argc, char *argv[]) {
   // LUT for coloring the particles
   vtkNew<vtkLookupTable> lut;
 
-  lut->SetHueRange(0.0, 0.667);
+  lut->SetHueRange(0.667, 0.0);
   lut->SetAlphaRange(0.2, 0.7);
   // lut->SetTableRange(1.1, 11.4);
   lut->SetNumberOfColors(256);
@@ -179,7 +181,7 @@ int main(int argc, char *argv[]) {
   // Here we set its color and rotate it around the X and Y axes.
   vtkNew<vtkActor> actor;
   actor->SetMapper(dataMapper);
-  actor->GetProperty()->SetOpacity(0.5);
+  actor->GetProperty()->SetOpacity(0.2);
   actor->SetDragable(1);
 
   // The renderer generates the image
@@ -202,20 +204,6 @@ int main(int argc, char *argv[]) {
   renderer->AddActor(actor);
   renderer->SetBackground(colors->GetColor3d("BkgColor").GetData());
 
-  vtkNew<vtkSliderRepresentation3D> sliderRep;
-  sliderRep->SetMinimumValue(1.0);
-  sliderRep->SetMaximumValue(625);
-  sliderRep->SetValue((double)active);
-  sliderRep->SetTitleText("Timestep");
-  sliderRep->GetPoint1Coordinate()->SetCoordinateSystemToDisplay();
-  sliderRep->GetPoint1Coordinate()->SetValue(0.4, 0.3);
-  sliderRep->GetPoint2Coordinate()->SetCoordinateSystemToDisplay();
-  sliderRep->GetPoint2Coordinate()->SetValue(0.3, 0.3);
-
-  vtkNew<vtkSliderWidget> sliderWidget;
-  sliderWidget->SetInteractor(renderWindowInteractor);
-  sliderWidget->SetRepresentation(sliderRep);
-  sliderWidget->SetAnimationModeToAnimate();
 
   // Scalar bar for the particle colors
   vtkNew<vtkScalarBarActor> scalarBar;
@@ -236,10 +224,8 @@ int main(int argc, char *argv[]) {
   vtkNew<vtkSliderCallback> callback;
   callback.GetPointer()->displayData = displaySourcePolyData.GetPointer();
   callback.GetPointer()->readers = &dataset_readers;
-
-  // Register callback
-  sliderWidget->AddObserver(vtkCommand::InteractionEvent, callback);
-
+  
+  // This is the camera
   vtkNew<vtkCamera> camera;
   float scale = 50;
   camera->SetPosition(scale * 3.24, scale * 2.65, scale * 4.09);
@@ -259,9 +245,35 @@ int main(int argc, char *argv[]) {
   // This starts the event loop and as a side effect causes an initial render.
   renderWindow->Render();
 
-  sliderWidget->EnabledOn();
-  sliderWidget.GetPointer()->InvokeEvent(vtkCommand::InteractionEvent);
+  vtkNew<vtkSliderRepresentation2D> sliderRep;
+  sliderRep->SetMinimumValue(1.0);
+  sliderRep->SetMaximumValue(625);
+  sliderRep->SetValue((double)active);
+  sliderRep->SetTitleText("Timestep");
+  sliderRep->DragableOn();
+  
+  // sliderRep->SetTubeWidth(0.05);
+  sliderRep->SetPlaceFactor(2.0);
 
+  sliderRep->GetPoint1Coordinate()->SetCoordinateSystemToDisplay();
+  sliderRep->GetPoint1Coordinate()->SetValue(40, 80);
+  sliderRep->GetPoint2Coordinate()->SetCoordinateSystemToDisplay();
+  sliderRep->GetPoint2Coordinate()->SetValue(300, 80);
+
+  vtkNew<vtkSliderWidget> sliderWidget;
+  sliderWidget->SetInteractor(renderWindowInteractor);
+  sliderWidget->SetRepresentation(sliderRep);
+  sliderWidget->On();
+  sliderWidget->SetAnimationModeToAnimate();
+
+  // Register callback
+  sliderWidget->AddObserver(vtkCommand::InteractionEvent, callback);
+
+
+  sliderWidget->On();
+  // sliderWidget.GetPointer()->InvokeEvent(vtkCommand::InteractionEvent);
+
+  renderWindowInteractor->Initialize();
   renderWindowInteractor->Start();
 
   return EXIT_SUCCESS;
