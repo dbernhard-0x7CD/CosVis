@@ -20,12 +20,19 @@ mkdir -p build && cd build && cmake .. && cmake --build .
 ```
 
 # TODO
- * create filter which scales the points to their actual location (via cosmological scale factor 'a') [CPP]
-    * fix camera position and zoom away as time progresses (scale with a) [CPP]
+ * try clustering from scikit-learn [paraview] 
+    * particle tracer?
+* SPH (or alternative)
  * create histogram for the types of particles [paraview]
     * visualize this histogram over time
  * create filter which takes data from UI and filters particles based on their type [CPP]
-    * first create particle filter in CPP
+    * first create particle filter in CPP; Selection: via keypress
+ * [maybe drop] create filter which scales the points to their actual location (via cosmological scale factor 'a') [CPP]
+    * fix camera position and zoom away as time progresses (scale with a) [CPP]
+        * WIP
+
+# TO ASK
+* 9th bit is only for dark-matter, this makes no sense
  
 # DONE
  * create legend for particle color [CPP]
