@@ -238,7 +238,10 @@ int main(int argc, char *argv[]) {
 
   vtkNew<KeyPressInteractorStyle> style;
   style->camera = camera;
+  style->renderWindow = renderWindow;
+  
   renderWindowInteractor->SetInteractorStyle(style);
+  style->EnabledOn();
   renderWindowInteractor->SetRenderWindow(renderWindow);
 
   renderer->SetActiveCamera(camera);

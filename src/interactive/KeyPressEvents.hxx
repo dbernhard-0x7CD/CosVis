@@ -6,6 +6,7 @@ class vtkCamera;
 class KeyPressInteractorStyle : public vtkInteractorStyleTrackballCamera {
 public:
   static KeyPressInteractorStyle *New();
+  vtkRenderWindow *renderWindow;
   vtkTypeMacro(KeyPressInteractorStyle, vtkInteractorStyleTrackballCamera);
   vtkCamera *camera;
   virtual void OnKeyPress() override;
