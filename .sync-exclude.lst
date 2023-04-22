@@ -1,0 +1,4 @@
+data/*.vtp
+.venv/
+build/
+data/.*vtp
