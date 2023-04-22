@@ -33,6 +33,7 @@ python ./python_scripts/run_clustering.py
 # TODO
  * try clustering from scikit-learn [paraview] 
     * particle tracer?
+ * w,a,s,d to move eye view? [CPP]
 * SPH (or alternative)
  * create histogram for the types of particles [paraview]
     * visualize this histogram over time
@@ -40,7 +41,7 @@ python ./python_scripts/run_clustering.py
     * first create particle filter in CPP; Selection: via keypress
  * [maybe drop] create filter which scales the points to their actual location (via cosmological scale factor 'a') [CPP]
     * fix camera position and zoom away as time progresses (scale with a) [CPP]
-        * WIP
+    * needs background image
 
 # TO ASK
 * 9th bit is only for dark-matter, this makes no sense
