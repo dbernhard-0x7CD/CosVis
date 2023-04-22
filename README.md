@@ -13,6 +13,17 @@
 mkdir -p build && cd build && cmake .. && cmake --build .
 ```
 
+## Precomputation
+
+As we run the clustering via python you need to execute this to generate the cluster data:
+
+```python
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python ./python_scripts/run_clustering.py
+```
+
 # Running
 
 ```
