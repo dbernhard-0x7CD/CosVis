@@ -148,6 +148,7 @@ int main(int argc, char *argv[]) {
   activeReader->Update();
   displaySourcePolyData->ShallowCopy(activeReader->GetOutput());
 
+  // This filter calculates the temperature
   vtkNew<vtkProgrammableFilter> temperatureFilter;
   temperatureFilter->SetInputData(displaySourcePolyData);
 
