@@ -155,6 +155,7 @@ int main(int argc, char *argv[]) {
   temperatureFilterParams.data = displaySourcePolyData;
   temperatureFilterParams.filter = temperatureFilter;
   temperatureFilterParams.mapper = dataMapper;
+  temperatureFilterParams.updateScalarRange = true;
 
   temperatureFilter->SetExecuteMethod(CalculateTemperature,
                                       &temperatureFilterParams);

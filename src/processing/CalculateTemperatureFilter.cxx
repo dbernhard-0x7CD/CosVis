@@ -37,10 +37,13 @@ void CalculateTemperature(void *arguments) {
     temp->InsertNextValue(factor * this_uu / pow(1.0 + z, 3));
   }
 
-  double range[2];
-  temp->GetRange(range);
-  input->mapper->SetScalarRange(range);
-  printf("Range is from %lf to %lf\n", range[0], range[1]);
+  if (input->updateScalarRange) {
+    double range[2];
+    temp->GetRange(range);
+    input->mapper->SetScalarRange(range);
+    printf("Range is from %lf to %lf\n", range[0], range[1]);
+  }
+
   input->filter->GetPolyDataOutput()->ShallowCopy(input->data);
   input->filter->GetPolyDataOutput()->GetPointData()->AddArray(temp);
 }

@@ -5,6 +5,9 @@ class vtkProgrammableFilter;
 struct params {
   vtkPolyData *data;
   vtkProgrammableFilter *filter;
+
+  // Defines if we update the scalar range of the data mapper
+  bool updateScalarRange;
   vtkPolyDataMapper *mapper;
 };
 
