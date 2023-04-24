@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string>
 #include <utility> // for pair
+#include <list>
 
 #include <vtkActor.h>
 #include <vtkCamera.h>
@@ -40,6 +41,7 @@
 
 #include "data/Loader.h"
 #include "processing/CalculateTemperatureFilter.hxx"
+#include "processing/AssignClusterFilter.hxx"
 #include "interactive/KeyPressEvents.hxx"
 
 namespace fs = std::filesystem;
@@ -49,6 +51,9 @@ namespace {
 class vtkSliderCallback : public vtkCommand {
 public:
   vtkSliderCallback(){};
+
+  // Defines the filter that comes after this
+  vtkProgrammableFilter* nextFilter;
 
   vtkSliderCallback(vtkPolyData *displayData,
                     std::map<int, vtkXMLPolyDataReader *> *readers) {
@@ -85,6 +90,8 @@ public:
 
     this->displayData->ShallowCopy(activeReader->GetOutput());
 
+    nextFilter->Update();
+
     printf("Switching to timestep: %d\n", val);
   }
 
@@ -120,6 +127,41 @@ int main(int argc, char *argv[]) {
   }
   printf("Finished creating data loaders\n");
 
+  // Load cluster assignments
+  std::map<int, int> clusters;
+  vtkXMLPolyDataReader *clusterReader = vtkXMLPolyDataReader::New();
+  std::string path = data_folder_path.append("/clusters.vtp");
+  if (!std::filesystem::exists(path)) {
+    printf("The clusters file is missing at %s. Please read the README.md on how to generate it.\n", path.c_str());
+    return 0;
+  }
+  clusterReader->SetFileName(path.c_str());
+  clusterReader->Update();
+
+  vtkIdType num = clusterReader->GetNumberOfPoints();
+
+  vtkPolyData *data = clusterReader->GetOutput();
+  vtkTypeInt64Array *ids = static_cast<vtkTypeInt64Array*>(data->GetPointData()->GetArray("id"));
+  vtkTypeInt64Array *carr = static_cast<vtkTypeInt64Array*>(data->GetPointData()->GetArray("cluster_id"));
+ 
+  for (vtkIdType i = 0; i < num; i++) {
+    int id = ids->GetValue(i);
+    int cluster = carr->GetValue(i);
+    if (cluster == -1) {
+      clusters.insert_or_assign(id, 26);
+    } else {
+      clusters.insert_or_assign(id, cluster);
+    }
+  }
+
+  // print point ids which have no cluster assigned
+  for (vtkIdType i = 0; i < num; i++) {
+    if (clusters.find(i) == clusters.end()) {
+      printf("Missing point in cluster ass: %ld\n", i);
+    }
+  }
+  printf("Finished reading %d clusters\n", num);
+
   vtkXMLPolyDataReader *activeReader;
   vtkNew<vtkPolyData> displaySourcePolyData;
   vtkNew<vtkNamedColors> colors;
@@ -133,15 +175,58 @@ int main(int argc, char *argv[]) {
   colors->SetColor("BkgColor", background);
 
   // LUT for coloring the particles
-  vtkNew<vtkLookupTable> lut;
+  // vtkNew<vtkLookupTable> lut;
 
-  lut->SetHueRange(0.667, 0.0);
-  lut->SetAlphaRange(0.2, 0.7);
-  // lut->SetTableRange(1.1, 11.4);
-  lut->SetNumberOfColors(256);
-  // TODO: we should probably move to a logarithm scale
-  // lut->SetScaleToLog10();
-  lut->Build();
+  // lut->SetHueRange(0.667, 0.0);
+  // lut->SetAlphaRange(0.2, 0.7);
+  // // lut->SetTableRange(1.1, 11.4);
+  // lut->SetNumberOfColors(256);
+  // // TODO: we should probably move to a logarithm scale
+  // // lut->SetScaleToLog10();
+  // lut->Build();
+
+  vtkNew<vtkLookupTable> categoryLut;
+
+  categoryLut->SetTableRange(0.0, 26.0);
+  // categoryLut->SetNumberOfColors(27);
+  categoryLut->SetNumberOfTableValues(27);
+  categoryLut->Build();
+
+  // green
+  categoryLut->SetNanColor(0.0, 1.0, 0.0, 1.0);
+
+  // 26 is noise points (are not assigned to any cluster)
+  categoryLut->SetTableValue(26, 0.0, 1.0, 0.0, 0.0);
+  categoryLut->SetTableValue(0, 1.0, 0.0, 0.0, 1.0);
+  categoryLut->SetTableValue(1, 0.33, 0.42, 0.18, 1.0);
+  categoryLut->SetTableValue(2, 0.54, 0.26, 0.07, 1.0);
+  categoryLut->SetTableValue(3, 0.28, 0.23, 0.54, 1.0);
+  categoryLut->SetTableValue(4, 0.23, 0.7, 0.44, 1.0);
+  categoryLut->SetTableValue(5, 0.0, 0.54, 0.54, 1.0);
+  categoryLut->SetTableValue(6, 0.0, 0.0, 0.5, 1.0);
+  categoryLut->SetTableValue(7, 0.6, 0.8, 0.19, 1.0);
+  categoryLut->SetTableValue(8, 0.54, 0.0, 0.54, 1.0);
+  categoryLut->SetTableValue(9, 1.0, 0.0, 0.0, 1.0);
+  categoryLut->SetTableValue(10, 1.0, 0.54, 0.0, 1.0);
+  categoryLut->SetTableValue(11, 1.0, 1.0, 0.0, 1.0);
+  categoryLut->SetTableValue(12, 0.0, 1.0, 0.0, 1.0);
+  categoryLut->SetTableValue(13, 0.54, 0.167, 0.88, 1.0);
+  categoryLut->SetTableValue(14, 1.0, 1.0, 1.0, 1.0);
+  categoryLut->SetTableValue(15, 0.86, 0.078, 0.156, 1.0);
+  categoryLut->SetTableValue(16, 0.0, 1.0, 1.0, 1.0);
+  categoryLut->SetTableValue(17, 0.0, 0.746, 1.0, 1.0);
+  categoryLut->SetTableValue(18, 0.0, 0.0, 1.0, 1.0);
+  categoryLut->SetTableValue(19, 1.0, 0.0, 1.0, 1.0);
+  categoryLut->SetTableValue(20, 0.117, 0.56, 1.0, 1.0);
+  categoryLut->SetTableValue(21, 0.855, 0.437, 0.574, 1.0);
+  categoryLut->SetTableValue(22, 0.937, 0.898, 0.547, 1.0);
+  categoryLut->SetTableValue(23, 1.0, 0.078, 0.574, 1.0);
+  categoryLut->SetTableValue(24, 1.0, 0.626, 0.476, 1.0);
+  categoryLut->SetTableValue(25, 0.93, 0.508, 0.93, 1.0);
+  categoryLut->SetUseAboveRangeColor(1);
+  categoryLut->SetAboveRangeColor(0.0, 0.0, 1.0, 1.0);
+  categoryLut->SetUseBelowRangeColor(1);
+  categoryLut->SetBelowRangeColor(0.0, 0.0, 0.0, 1.0);
 
   // Set the active reader and get its output to be the polydata
   activeReader = dataset_readers.at(active);
@@ -156,25 +241,37 @@ int main(int argc, char *argv[]) {
   temperatureFilterParams.data = displaySourcePolyData;
   temperatureFilterParams.filter = temperatureFilter;
   temperatureFilterParams.mapper = dataMapper;
-  temperatureFilterParams.updateScalarRange = true;
+  temperatureFilterParams.updateScalarRange = false;
 
   temperatureFilter->SetExecuteMethod(CalculateTemperature,
                                       &temperatureFilterParams);
   temperatureFilter->Update();
 
+  // This filter adds a column with the cluster index
+  vtkNew<vtkProgrammableFilter> clusterFilter;
+  clusterFilter->SetInputData(temperatureFilter->GetOutput());
+
+  ac_params clusterFilterParams;
+  clusterFilterParams.data = static_cast<vtkPolyData*>(temperatureFilter->GetOutput());
+  clusterFilterParams.filter = clusterFilter;
+  clusterFilterParams.clustering = &clusters;
+
+  clusterFilter->SetExecuteMethod(AssignCluster, &clusterFilterParams);
+  clusterFilter->Update();
+
   vtkNew<vtkGlyph3D> glyph3D;
   glyph3D->SetSourceConnection(ptSource->GetOutputPort());
-  glyph3D->SetInputConnection(temperatureFilter->GetOutputPort());
+  glyph3D->SetInputConnection(clusterFilter->GetOutputPort());
   glyph3D->Update();
 
   // The mapper is responsible for pushing the geometry into the graphics
   // library. It may also do color mapping, if scalars or other attributes are
   // defined.
-  dataMapper->SetLookupTable(lut);
+  dataMapper->SetLookupTable(categoryLut);
   dataMapper->ScalarVisibilityOn();
-  dataMapper->SelectColorArray("Temperature");
+  dataMapper->SelectColorArray("Cluster");
   dataMapper->SetScalarModeToUsePointFieldData();
-  dataMapper->InterpolateScalarsBeforeMappingOn();
+  dataMapper->SetScalarRange(0, 26);
   dataMapper->SetInputConnection(glyph3D->GetOutputPort());
 
   // The actor is a grouping mechanism: besides the geometry (mapper), it
@@ -205,24 +302,25 @@ int main(int argc, char *argv[]) {
   renderer->AddActor(actor);
   renderer->SetBackground(colors->GetColor3d("BkgColor").GetData());
 
-
   // Scalar bar for the particle colors
-  vtkNew<vtkScalarBarActor> scalarBar;
-  scalarBar->SetOrientationToHorizontal();
-  scalarBar->SetLookupTable(lut);
-  scalarBar->SetPosition2(0.2, 1.5);
-  scalarBar->SetPosition(1, 1.5);
-  scalarBar->SetWidth(2);
+  // vtkNew<vtkScalarBarActor> scalarBar;
+  // scalarBar->SetOrientationToHorizontal();
+  // scalarBar->SetLookupTable(lut);
+  // scalarBar->SetPosition2(0.2, 1.5);
+  // scalarBar->SetPosition(1, 1.5);
+  // scalarBar->SetWidth(2);
 
-  // create the scalarBarWidget
-  vtkNew<vtkScalarBarWidget> scalarBarWidget;
-  scalarBarWidget->SetInteractor(renderWindowInteractor);
-  scalarBarWidget->SetScalarBarActor(scalarBar);
-  scalarBarWidget->On();
+  // // create the scalarBarWidget
+  // vtkNew<vtkScalarBarWidget> scalarBarWidget;
+  // scalarBarWidget->SetInteractor(renderWindowInteractor);
+  // scalarBarWidget->SetScalarBarActor(scalarBar);
+  // scalarBarWidget->On();
 
   // Create the callback; I do not know how to pass displayData and readers via
   // a constructor
   vtkNew<vtkSliderCallback> callback;
+  callback->nextFilter = temperatureFilter;
+
   callback.GetPointer()->displayData = displaySourcePolyData.GetPointer();
   callback.GetPointer()->readers = &dataset_readers;
   
@@ -256,9 +354,6 @@ int main(int argc, char *argv[]) {
   sliderRep->SetTitleText("Timestep");
   sliderRep->DragableOn();
   
-  // sliderRep->SetTubeWidth(0.05);
-  sliderRep->SetPlaceFactor(2.0);
-
   sliderRep->GetPoint1Coordinate()->SetCoordinateSystemToDisplay();
   sliderRep->GetPoint1Coordinate()->SetValue(40, 80);
   sliderRep->GetPoint2Coordinate()->SetCoordinateSystemToDisplay();
