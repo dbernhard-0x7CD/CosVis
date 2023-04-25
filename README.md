@@ -47,6 +47,10 @@ python ./python_scripts/run_clustering.py
 * 9th bit is only for dark-matter, this makes no sense
  
 # DONE
+ * Switch between temperature and clustering [CPP]
+ * create animation of clustering [paraview]
+ * try clustering from scikit-learn [paraview] 
+ * navigate with arrow keys [CPP]
  * create legend for particle color [CPP]
  * create filter to compute temperature [CPP]
  * create filter which scales the points to their actual location (via cosmological scale factor 'a') [paraview]
