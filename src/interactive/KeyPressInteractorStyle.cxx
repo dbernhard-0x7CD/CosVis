@@ -14,7 +14,7 @@
 #include <vtkProperty.h>
 #include <vtkRenderWindowInteractor.h> // for vtkRenderWindowIntera...
 
-#include "KeyPressEvents.hxx"
+#include "../interactive/KeyPressInteractorStyle.hxx"
 #include "../processing/CalculateTemperatureFilter.hxx"
 
 // Define interaction style
@@ -194,7 +194,20 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
+//  if (key == "w") {
+//    camera->SetViewUp()
+//
+//    return;
+//  }
+
   if (key == "k") {
+    double pos[3];
+    camera->GetPosition(pos);
+    pos[0] = pos[0] + 1;
+    camera->SetPosition(pos);
+  }
+
+  if (key == "n") {
     double pos[3];
     camera->GetPosition(pos);
     pos[0] = pos[0] + 1;

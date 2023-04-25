@@ -42,7 +42,7 @@
 #include "data/Loader.h"
 #include "processing/CalculateTemperatureFilter.hxx"
 #include "processing/AssignClusterFilter.hxx"
-#include "interactive/KeyPressEvents.hxx"
+#include "interactive/KeyPressInteractorStyle.hxx"
 #include "helper/helper.hxx"
 
 namespace fs = std::filesystem;

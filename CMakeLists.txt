@@ -31,7 +31,7 @@ add_executable(${PROJECT_NAME}
   ./src/helper/helper.cxx
   ./src/processing/CalculateTemperatureFilter.cxx
   ./src/processing/AssignClusterFilter.cxx
-  ./src/interactive/KeyPressEvents.cxx
+  ./src/interactive/KeyPressInteractorStyle.cxx
   ./src/data/Loader.cxx)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
