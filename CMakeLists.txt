@@ -28,6 +28,7 @@ find_package(VTK COMPONENTS
 
 add_executable(${PROJECT_NAME}
   ./src/main.cxx
+  ./src/helper/helper.cxx
   ./src/processing/CalculateTemperatureFilter.cxx
   ./src/processing/AssignClusterFilter.cxx
   ./src/interactive/KeyPressEvents.cxx

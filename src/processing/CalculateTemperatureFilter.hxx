@@ -1,8 +1,10 @@
+#pragma once
+
 class vtkPolyData;
 class vtkPolyDataMapper;
 class vtkProgrammableFilter;
 
-struct params {
+struct tempFilterParams {
   vtkPolyData *data;
   vtkProgrammableFilter *filter;
 

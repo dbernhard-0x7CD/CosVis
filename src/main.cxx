@@ -43,6 +43,7 @@
 #include "processing/CalculateTemperatureFilter.hxx"
 #include "processing/AssignClusterFilter.hxx"
 #include "interactive/KeyPressEvents.hxx"
+#include "helper/helper.hxx"
 
 namespace fs = std::filesystem;
 
@@ -101,7 +102,7 @@ public:
 } // namespace
 
 // Some program constants
-const std::string background("#2a2e32");
+const std::string background("#111111");
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
@@ -121,7 +122,6 @@ int main(int argc, char *argv[]) {
     vtkXMLPolyDataReader *reader = vtkXMLPolyDataReader::New();
     int index = path.first;
     reader->SetFileName(path.second.c_str());
-    // reader->Update();
 
     dataset_readers.insert_or_assign(path.first, reader);
   }
@@ -167,66 +167,14 @@ int main(int argc, char *argv[]) {
   vtkNew<vtkNamedColors> colors;
   vtkNew<vtkPointSource> ptSource;
   vtkNew<vtkPolyDataMapper> dataMapper;
+  vtkNew<vtkLookupTable> tempLUT = GetTemperatureLUT();
+  vtkNew<vtkLookupTable> clusterLUT = GetClusterLUT();
 
   // active timestep
-  int active = 0;
+  int active = 624;
 
   // Set the background color.
   colors->SetColor("BkgColor", background);
-
-  // LUT for coloring the particles
-  // vtkNew<vtkLookupTable> lut;
-
-  // lut->SetHueRange(0.667, 0.0);
-  // lut->SetAlphaRange(0.2, 0.7);
-  // // lut->SetTableRange(1.1, 11.4);
-  // lut->SetNumberOfColors(256);
-  // // TODO: we should probably move to a logarithm scale
-  // // lut->SetScaleToLog10();
-  // lut->Build();
-
-  vtkNew<vtkLookupTable> categoryLut;
-
-  categoryLut->SetTableRange(0.0, 26.0);
-  // categoryLut->SetNumberOfColors(27);
-  categoryLut->SetNumberOfTableValues(27);
-  categoryLut->Build();
-
-  // green
-  categoryLut->SetNanColor(0.0, 1.0, 0.0, 1.0);
-
-  // 26 is noise points (are not assigned to any cluster)
-  categoryLut->SetTableValue(26, 0.0, 1.0, 0.0, 0.0);
-  categoryLut->SetTableValue(0, 1.0, 0.0, 0.0, 1.0);
-  categoryLut->SetTableValue(1, 0.33, 0.42, 0.18, 1.0);
-  categoryLut->SetTableValue(2, 0.54, 0.26, 0.07, 1.0);
-  categoryLut->SetTableValue(3, 0.28, 0.23, 0.54, 1.0);
-  categoryLut->SetTableValue(4, 0.23, 0.7, 0.44, 1.0);
-  categoryLut->SetTableValue(5, 0.0, 0.54, 0.54, 1.0);
-  categoryLut->SetTableValue(6, 0.0, 0.0, 0.5, 1.0);
-  categoryLut->SetTableValue(7, 0.6, 0.8, 0.19, 1.0);
-  categoryLut->SetTableValue(8, 0.54, 0.0, 0.54, 1.0);
-  categoryLut->SetTableValue(9, 1.0, 0.0, 0.0, 1.0);
-  categoryLut->SetTableValue(10, 1.0, 0.54, 0.0, 1.0);
-  categoryLut->SetTableValue(11, 1.0, 1.0, 0.0, 1.0);
-  categoryLut->SetTableValue(12, 0.0, 1.0, 0.0, 1.0);
-  categoryLut->SetTableValue(13, 0.54, 0.167, 0.88, 1.0);
-  categoryLut->SetTableValue(14, 1.0, 1.0, 1.0, 1.0);
-  categoryLut->SetTableValue(15, 0.86, 0.078, 0.156, 1.0);
-  categoryLut->SetTableValue(16, 0.0, 1.0, 1.0, 1.0);
-  categoryLut->SetTableValue(17, 0.0, 0.746, 1.0, 1.0);
-  categoryLut->SetTableValue(18, 0.0, 0.0, 1.0, 1.0);
-  categoryLut->SetTableValue(19, 1.0, 0.0, 1.0, 1.0);
-  categoryLut->SetTableValue(20, 0.117, 0.56, 1.0, 1.0);
-  categoryLut->SetTableValue(21, 0.855, 0.437, 0.574, 1.0);
-  categoryLut->SetTableValue(22, 0.937, 0.898, 0.547, 1.0);
-  categoryLut->SetTableValue(23, 1.0, 0.078, 0.574, 1.0);
-  categoryLut->SetTableValue(24, 1.0, 0.626, 0.476, 1.0);
-  categoryLut->SetTableValue(25, 0.93, 0.508, 0.93, 1.0);
-  categoryLut->SetUseAboveRangeColor(1);
-  categoryLut->SetAboveRangeColor(0.0, 0.0, 1.0, 1.0);
-  categoryLut->SetUseBelowRangeColor(1);
-  categoryLut->SetBelowRangeColor(0.0, 0.0, 0.0, 1.0);
 
   // Set the active reader and get its output to be the polydata
   activeReader = dataset_readers.at(active);
@@ -237,7 +185,7 @@ int main(int argc, char *argv[]) {
   vtkNew<vtkProgrammableFilter> temperatureFilter;
   temperatureFilter->SetInputData(displaySourcePolyData);
 
-  params temperatureFilterParams;
+  tempFilterParams temperatureFilterParams;
   temperatureFilterParams.data = displaySourcePolyData;
   temperatureFilterParams.filter = temperatureFilter;
   temperatureFilterParams.mapper = dataMapper;
@@ -267,20 +215,16 @@ int main(int argc, char *argv[]) {
   // The mapper is responsible for pushing the geometry into the graphics
   // library. It may also do color mapping, if scalars or other attributes are
   // defined.
-  dataMapper->SetLookupTable(categoryLut);
+  dataMapper->SetLookupTable(clusterLUT);
   dataMapper->ScalarVisibilityOn();
   dataMapper->SelectColorArray("Cluster");
   dataMapper->SetScalarModeToUsePointFieldData();
-  dataMapper->SetScalarRange(0, 26);
   dataMapper->SetInputConnection(glyph3D->GetOutputPort());
 
   // The actor is a grouping mechanism: besides the geometry (mapper), it
   // also has a property, transformation matrix, and/or texture map.
-  // Here we set its color and rotate it around the X and Y axes.
   vtkNew<vtkActor> actor;
   actor->SetMapper(dataMapper);
-  actor->GetProperty()->SetOpacity(0.2);
-  actor->SetDragable(1);
 
   // The renderer generates the image
   // which is then displayed on the render window.
@@ -298,22 +242,24 @@ int main(int argc, char *argv[]) {
   // depending on the nature of the events.
   vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
   renderWindowInteractor->SetRenderWindow(renderWindow);
+  renderWindowInteractor->Initialize();
 
   renderer->AddActor(actor);
   renderer->SetBackground(colors->GetColor3d("BkgColor").GetData());
 
-  // Scalar bar for the particle colors
-  // vtkNew<vtkScalarBarActor> scalarBar;
-  // scalarBar->SetOrientationToHorizontal();
-  // scalarBar->SetLookupTable(lut);
-  // scalarBar->SetPosition2(0.2, 1.5);
-  // scalarBar->SetPosition(1, 1.5);
-  // scalarBar->SetWidth(2);
+  // Scalar bar for the particle colors when showing the temperature
+  vtkNew<vtkScalarBarActor> scalarBar;
+  scalarBar->SetOrientationToHorizontal();
+  scalarBar->SetLookupTable(tempLUT);
+  scalarBar->SetPosition2(0.2, 1.5);
+  scalarBar->SetPosition(1, 1.5);
+  scalarBar->SetWidth(2);
+  scalarBar->Modified();
 
-  // // create the scalarBarWidget
-  // vtkNew<vtkScalarBarWidget> scalarBarWidget;
-  // scalarBarWidget->SetInteractor(renderWindowInteractor);
-  // scalarBarWidget->SetScalarBarActor(scalarBar);
+  // create the scalarBarWidget
+  vtkNew<vtkScalarBarWidget> scalarBarWidget;
+  scalarBarWidget->SetInteractor(renderWindowInteractor);
+  scalarBarWidget->SetScalarBarActor(scalarBar);
   // scalarBarWidget->On();
 
   // Create the callback; I do not know how to pass displayData and readers via
@@ -330,14 +276,20 @@ int main(int argc, char *argv[]) {
   camera->SetPosition(scale * 3.24, scale * 2.65, scale * 4.09);
   camera->SetFocalPoint(scale * 0.51, scale * 0.71, scale * 0.78);
   camera->SetFocalDisk(1.0);
-  camera->SetEyeAngle(2);
   camera->SetEyeAngle(30);
-  camera->SetFocalDistance(0.0);
+  camera->SetFocalDistance(1.0);
   camera->SetViewUp(-0.27, 0.91, -0.31);
 
   vtkNew<KeyPressInteractorStyle> style;
   style->camera = camera;
   style->renderWindow = renderWindow;
+  style->dataMapper = dataMapper;
+  style->actor = actor;
+  style->tempLUT = tempLUT;
+  style->clusterLUT = clusterLUT;
+  style->tempScalarBarWidget = scalarBarWidget;
+  style->tempScalarBarActor = scalarBar;
+  style->tempFilterParameters = &temperatureFilterParams;
   
   renderWindowInteractor->SetInteractorStyle(style);
   style->EnabledOn();
@@ -352,27 +304,24 @@ int main(int argc, char *argv[]) {
   sliderRep->SetMaximumValue(625);
   sliderRep->SetValue((double)active);
   sliderRep->SetTitleText("Timestep");
-  sliderRep->DragableOn();
-  
   sliderRep->GetPoint1Coordinate()->SetCoordinateSystemToDisplay();
   sliderRep->GetPoint1Coordinate()->SetValue(40, 80);
   sliderRep->GetPoint2Coordinate()->SetCoordinateSystemToDisplay();
-  sliderRep->GetPoint2Coordinate()->SetValue(300, 80);
+  sliderRep->GetPoint2Coordinate()->SetValue(320, 80);
 
   vtkNew<vtkSliderWidget> sliderWidget;
   sliderWidget->SetInteractor(renderWindowInteractor);
   sliderWidget->SetRepresentation(sliderRep);
-  sliderWidget->On();
+  sliderWidget->SetNumberOfAnimationSteps(10);
   sliderWidget->SetAnimationModeToAnimate();
+  sliderWidget->On();
 
   // Register callback
   sliderWidget->AddObserver(vtkCommand::InteractionEvent, callback);
 
-
-  sliderWidget->On();
+  // Switch to 'active' timestep
   // sliderWidget.GetPointer()->InvokeEvent(vtkCommand::InteractionEvent);
 
-  renderWindowInteractor->Initialize();
   renderWindowInteractor->Start();
 
   return EXIT_SUCCESS;

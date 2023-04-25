@@ -4,10 +4,18 @@
 #include <vtkInteractorStyleTrackballCamera.h> // for vtkInteractorStyleTra...
 #include <vtkMath.h>
 #include <vtkObjectFactory.h> // for vtkStandardNewMacro
+#include <vtkProgrammableFilter.h>
 #include <vtkRenderWindow.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkLookupTable.h>
+#include <vtkScalarBarActor.h>
+#include <vtkActor.h>
+#include <vtkScalarBarWidget.h>
+#include <vtkProperty.h>
 #include <vtkRenderWindowInteractor.h> // for vtkRenderWindowIntera...
 
 #include "KeyPressEvents.hxx"
+#include "../processing/CalculateTemperatureFilter.hxx"
 
 // Define interaction style
 void KeyPressInteractorStyle::OnKeyPress() {
@@ -130,6 +138,59 @@ void KeyPressInteractorStyle::OnKeyPress() {
     camera->Modified();
 
     renderWindow->Render();
+    return;
+  }
+
+  if (key == "c") {
+    this->tempFilterParameters->updateScalarRange = false;
+    this->dataMapper->SelectColorArray("Cluster");
+    this->dataMapper->SetScalarRange(0, 26);
+    this->dataMapper->SetLookupTable(this->clusterLUT);
+    this->dataMapper->InterpolateScalarsBeforeMappingOff();
+
+    this->actor->GetProperty()->SetPointSize(1.0);
+    this->actor->GetProperty()->SetOpacity(0.5);
+    this->actor->GetProperty()->SetLighting(1.0);
+    this->actor->GetProperty()->SetAmbient(0.2);
+    // this->actor->GetProperty()->SetDiffuse(0.5);
+    this->actor->GetProperty()->RenderPointsAsSpheresOn();
+    this->tempScalarBarWidget->Off();
+
+    this->camera->Modified();
+
+    this->dataMapper->Update();
+    renderWindow->Render();
+    return;
+  }
+
+  if (key == "t") {
+    this->tempFilterParameters->updateScalarRange = true;
+    this->tempScalarBarActor->SetLookupTable(this->tempLUT);
+    this->tempScalarBarActor->Modified();
+
+    this->dataMapper->SelectColorArray("Temperature");
+    this->dataMapper->InterpolateScalarsBeforeMappingOn();
+    this->dataMapper->SetLookupTable(this->tempLUT);
+    // this->dataMapper->SetScalarRange();
+    // this->dataMapper->SetScalarRange(0, 1e3);
+
+    // this->actor->GetProperty()->SetLighting(0.0);
+    this->actor->GetProperty()->SetPointSize(1.2);
+    this->actor->GetProperty()->SetAmbient(2.3);
+    this->actor->GetProperty()->SetPointSize(0.3);
+    this->actor->GetProperty()->SetOpacity(0.7);
+    this->actor->Modified();
+
+    this->tempScalarBarWidget->On();
+    this->tempScalarBarWidget->Modified();
+    this->tempFilterParameters->filter->Modified();
+    this->camera->Modified();
+
+    this->tempFilterParameters->filter->Update();
+    this->dataMapper->Update();
+    this->tempScalarBarWidget->Render();
+    renderWindow->Render();
+    // enable legends and stuff
     return;
   }
 
