@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - run: apt update
-    - run: apt install vtk9 libvtk9-dev
+    - run: sudo apt update
+    - run: sudo apt install vtk9 libvtk9-dev
     - uses: actions/checkout@v3
 
     - name: Configure CMake
