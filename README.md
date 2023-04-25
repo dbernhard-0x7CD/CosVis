@@ -31,14 +31,14 @@ python ./python_scripts/run_clustering.py
 ```
 
 # TODO
- * try clustering from scikit-learn [paraview] 
-    * particle tracer?
- * w,a,s,d to move eye view? [CPP]
+* create filter which takes data from UI and filters particles based on their type [CPP]
+   * first create particle filter in CPP; Selection: via keypress
+* temperature in log [CPP]
+* animation in vtk [CPP]
+* particle tracer (center of galaxies)?
 * SPH (or alternative)
  * create histogram for the types of particles [paraview]
     * visualize this histogram over time
- * create filter which takes data from UI and filters particles based on their type [CPP]
-    * first create particle filter in CPP; Selection: via keypress
  * [maybe drop] create filter which scales the points to their actual location (via cosmological scale factor 'a') [CPP]
     * fix camera position and zoom away as time progresses (scale with a) [CPP]
     * needs background image
@@ -47,6 +47,7 @@ python ./python_scripts/run_clustering.py
 * 9th bit is only for dark-matter, this makes no sense
  
 # DONE
+ * w,a,s,d to move eyes [CPP]
  * Switch between temperature and clustering [CPP]
  * create animation of clustering [paraview]
  * try clustering from scikit-learn [paraview] 
