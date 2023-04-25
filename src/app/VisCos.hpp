@@ -69,8 +69,6 @@ private:
   AssignClusterParams clusterFilterParams;
   vtkNew<TimeSliderCallback> timeSliderCallback;
 
-  // void SetupPipeline();
-
 public:
   VisCos(int initial_active_timestep, std::string data_folder_path,
          std::string cluster_path);

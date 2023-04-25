@@ -3,7 +3,6 @@
 
 #include <vtkSliderRepresentation.h>
 #include <vtkSliderWidget.h>
-#include <vtkObject.h>
 
 #include "../app/VisCos.hpp"
 
