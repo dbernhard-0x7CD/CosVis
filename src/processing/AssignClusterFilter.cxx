@@ -11,7 +11,7 @@
 
 
 void AssignCluster(void *arguments) {
-  ac_params *input = static_cast<ac_params *>(arguments);
+  AssignClusterParams *input = static_cast<AssignClusterParams *>(arguments);
 
   vtkPoints *inPts = input->data->GetPoints();
   vtkIdType numPts = inPts->GetNumberOfPoints();

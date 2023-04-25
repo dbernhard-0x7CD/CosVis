@@ -1,5 +1,5 @@
 
-# Repository for the Visualization of the Cosmology data set
+# Repository for the Visualization of the Cosmology dataset
 
 
 ## Setup

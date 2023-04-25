@@ -1,21 +1,21 @@
+#pragma once
+
 #include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkSetGet.h> // for vtkTypeMacro
 
-#include "../processing/CalculateTemperatureFilter.hxx"
 class vtkCamera;
+class VisCos;
+class vtkActor;
+class vtkPolyDataMapper;
+class vtkRenderWindow;
 
 // Define interaction style
 class KeyPressInteractorStyle : public vtkInteractorStyleTrackballCamera {
+private:
 public:
   static KeyPressInteractorStyle *New();
 
-  vtkLookupTable* tempLUT;
-  vtkLookupTable* clusterLUT;
-
-  tempFilterParams* tempFilterParameters;
-  vtkScalarBarWidget* tempScalarBarWidget;
-  vtkScalarBarActor* tempScalarBarActor;
-
+  VisCos *app;
   vtkActor* actor;
   vtkRenderWindow *renderWindow;
   vtkPolyDataMapper* dataMapper;

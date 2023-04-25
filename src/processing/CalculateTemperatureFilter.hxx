@@ -4,7 +4,7 @@ class vtkPolyData;
 class vtkPolyDataMapper;
 class vtkProgrammableFilter;
 
-struct tempFilterParams {
+struct TempFilterParams {
   vtkPolyData *data;
   vtkProgrammableFilter *filter;
 

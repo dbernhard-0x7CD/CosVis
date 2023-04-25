@@ -27,11 +27,14 @@ find_package(VTK COMPONENTS
 )
 
 add_executable(${PROJECT_NAME}
+  ./src/app/VisCos.cxx
   ./src/main.cxx
   ./src/helper/helper.cxx
-  ./src/processing/CalculateTemperatureFilter.cxx
-  ./src/processing/AssignClusterFilter.cxx
+  ./src/interactive/TimeSliderCallback.cxx
   ./src/interactive/KeyPressInteractorStyle.cxx
+  ./src/processing/CalculateTemperatureFilter.cxx
+  ./src/processing/ParticleTypeFilter.cxx
+  ./src/processing/AssignClusterFilter.cxx
   ./src/data/Loader.cxx)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)

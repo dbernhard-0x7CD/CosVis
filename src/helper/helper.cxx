@@ -1,4 +1,5 @@
 #include <vtkLookupTable.h>
+#include <vtkNew.h>
 
 vtkNew<vtkLookupTable> GetTemperatureLUT() {
   // LUT for coloring the particles
@@ -18,7 +19,7 @@ vtkNew<vtkLookupTable> GetTemperatureLUT() {
   // lut->SetScaleToLog10();
 
   lut->Build();
-  
+
   return lut;
 }
 
