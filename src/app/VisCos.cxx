@@ -51,7 +51,7 @@ void VisCos::Load() {
 
     this->dataset_readers.insert_or_assign(path.first, reader);
   }
-  printf("Finished creating data %d loaders.\n", this->dataset_readers.size());
+  printf("Finished creating data %ld loaders.\n", this->dataset_readers.size());
 
   // Load cluster assignments
   vtkNew<vtkXMLPolyDataReader> clusterReader;
