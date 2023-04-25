@@ -4,6 +4,9 @@ set(PROJECT_NAME VisCos)
 
 project(${PROJECT_NAME})
 
+add_compile_options(-O3 -ffunction-sections -flto)
+
+
 find_package(VTK COMPONENTS
   CommonColor
   CommonCore
