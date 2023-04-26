@@ -6,5 +6,5 @@
 
 namespace fs = std::filesystem;
 
-std::map<int, fs::__cxx11::path>
+std::map<int, fs::path>
 load_cosmology_dataset(std::string data_folder_path);

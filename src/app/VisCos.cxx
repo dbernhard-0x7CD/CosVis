@@ -40,7 +40,7 @@ VisCos::VisCos(int initial_active_timestep, std::string data_folder_path,
 }
 
 void VisCos::Load() {
-  std::map<int, fs::__cxx11::path> files =
+  std::map<int, fs::path> files =
       load_cosmology_dataset(data_folder_path);
   printf("Loaded %lu files.\n", files.size());
 
