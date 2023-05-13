@@ -16,9 +16,6 @@ void KeyPressInteractorStyle::OnKeyPress() {
   vtkRenderWindowInteractor *rwi = this->Interactor;
   std::string key = rwi->GetKeySym();
 
-  // Output the key that was pressed
-  printf("Pressed %s\n", key.c_str());
-
   if (key == "Up") {
     double pt[3];
     double fpt[3];
@@ -158,7 +155,6 @@ void KeyPressInteractorStyle::OnKeyPress() {
   }
 
   if (key == "a") {
-    printf("The a key was pressed.\n");
     camera->Yaw(2);
     camera->Modified();
 
@@ -167,7 +163,6 @@ void KeyPressInteractorStyle::OnKeyPress() {
   }
 
   if (key == "d") {
-    printf("The d key was pressed.\n");
     camera->Yaw(-1);
     camera->Modified();
 
@@ -176,7 +171,6 @@ void KeyPressInteractorStyle::OnKeyPress() {
   }
 
   if (key == "w") {
-    printf("The a key was pressed.\n");
     camera->Pitch(1);
     camera->Modified();
 
@@ -184,13 +178,16 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
   if (key == "s") {
-    printf("The s key was pressed.\n");
     camera->Pitch(-1);
     camera->Modified();
 
     renderWindow->Render();
     return;
   }
+
+  // Output the key that was pressed
+  printf("Pressed unhandled %s\n", key.c_str());
+
   // Forward events
   vtkInteractorStyleTrackballCamera::OnKeyPress();
 }
