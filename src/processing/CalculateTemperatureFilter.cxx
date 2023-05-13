@@ -41,7 +41,6 @@ void CalculateTemperature(void *arguments) {
     double range[2];
     temp->GetRange(range);
     input->mapper->SetScalarRange(range);
-    printf("Range is from %lf to %lf\n", range[0], range[1]);
   }
 
   input->filter->GetPolyDataOutput()->ShallowCopy(input->data);
