@@ -16,7 +16,6 @@
 #include "CalculateTemperatureFilter.hxx"
 
 void CalculateTemperature(void *arguments) {
-  printf("calculating temp\n");
   TempFilterParams *input = static_cast<TempFilterParams *>(arguments);
 
   vtkPoints *inPts = input->data->GetPoints();
