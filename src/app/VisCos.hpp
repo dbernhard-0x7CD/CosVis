@@ -39,6 +39,10 @@ private:
   bool loaded = false;
   bool setup = false;
   int active_timestep;
+
+  // Number of steps to take when the slider was moved
+  int steps = 100;
+
   std::string background_color;
   std::string data_folder_path;
   std::string cluster_path;
@@ -83,6 +87,9 @@ public:
   void SetupPipeline();
 
   void SetBackgroundColor(std::string color);
+
+  void moreSteps();
+  void lessSteps();
 
   void Run();
 };

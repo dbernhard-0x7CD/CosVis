@@ -269,6 +269,18 @@ void VisCos::SetupPipeline() {
       ->SetValue((double)this->active_timestep);
 }
 
+void VisCos::moreSteps() {
+  this->steps += 10;
+  this->timeSliderWidget->SetNumberOfAnimationSteps(this->steps);
+  printf("New steps: %d\n", this->steps);
+}
+
+void VisCos::lessSteps() {
+  this->steps -= 10;
+  this->timeSliderWidget->SetNumberOfAnimationSteps(this->steps);
+  printf("New steps: %d\n", this->steps);
+}
+
 void VisCos::Run() {
   timeSliderRepr->SetMinimumValue(0.0);
   timeSliderRepr->SetMaximumValue(625);
@@ -281,7 +293,7 @@ void VisCos::Run() {
 
   timeSliderWidget->SetInteractor(renderWindowInteractor);
   timeSliderWidget->SetRepresentation(timeSliderRepr);
-  timeSliderWidget->SetNumberOfAnimationSteps(10);
+  timeSliderWidget->SetNumberOfAnimationSteps(this->steps);
   timeSliderWidget->SetAnimationModeToAnimate();
   timeSliderWidget->On();
 

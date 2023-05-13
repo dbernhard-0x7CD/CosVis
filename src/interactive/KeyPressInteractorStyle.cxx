@@ -185,6 +185,16 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
+  // Change amount of steps taken when the slider is moved with "[" and "]""
+  if (key == "bracketleft") {
+    app->lessSteps();
+    return;
+  }
+  if (key == "bracketright") {
+    app->moreSteps();
+    return;
+  }
+
   // Output the key that was pressed
   printf("Pressed unhandled %s\n", key.c_str());
 
