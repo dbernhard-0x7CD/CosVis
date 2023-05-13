@@ -190,7 +190,6 @@ void VisCos::SetupPipeline() {
   this->temperatureFilterParams.filter = temperatureFilter;
   this->temperatureFilterParams.mapper = dataMapper;
   this->temperatureFilterParams.updateScalarRange = false;
-  // activeReader->Update();
 
   temperatureFilter->SetExecuteMethod(CalculateTemperature,
                                       &temperatureFilterParams);
