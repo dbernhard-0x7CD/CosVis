@@ -27,6 +27,7 @@
 #include "../interactive/KeyPressInteractorStyle.hxx"
 #include "../interactive/TimeSliderCallback.hxx"
 #include "../processing/AssignClusterFilter.hxx"
+#include "../processing/ParticleTypeFilter.hxx"
 #include "../processing/CalculateTemperatureFilter.hxx"
 
 class vtkCamera;
@@ -65,12 +66,14 @@ private:
   vtkNew<vtkSliderWidget> timeSliderWidget;
   vtkNew<vtkProgrammableFilter> temperatureFilter;
   vtkNew<vtkProgrammableFilter> clusterFilter;
+  vtkNew<vtkProgrammableFilter> particleTypeFilter;
   vtkNew<vtkGlyph3D> glyph3D;
   vtkNew<vtkCamera> camera;
   vtkNew<KeyPressInteractorStyle> keyboardInteractorStyle;
 
   TempFilterParams temperatureFilterParams;
   AssignClusterParams clusterFilterParams;
+  particleTypeFilterParams particleFilterParams;
   vtkNew<TimeSliderCallback> timeSliderCallback;
 
 public:
@@ -90,6 +93,33 @@ public:
 
   void moreSteps();
   void lessSteps();
+
+  void showAll();
+  void hideAll();
+
+  void showBaryon();
+  void hideBaryon();
+  void toggleBaryon();
+
+  void showDarkMatter();
+  void hideDarkMatter();
+  void toggleDarkMatter();
+
+  void showBaryonStar();
+  void hideBaryonStar();
+  void toggleBaryonStar();
+
+  void showBaryonWind();
+  void hideBaryonWind();
+  void toggleBaryonWind();
+
+  void showBaryonSF();
+  void hideBaryonSF();
+  void toggleBaryonSF();
+
+  void showDarkAGN();
+  void hideDarkAGN();
+  void toggleDarkAGN();
 
   void Run();
 };

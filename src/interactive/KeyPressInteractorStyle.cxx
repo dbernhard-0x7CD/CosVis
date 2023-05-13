@@ -185,6 +185,48 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
+  if (key == "0") {
+    app->showAll();
+    renderWindow->Render();
+    return;
+  }
+
+  if (key == "9") {
+    app->hideAll();
+    renderWindow->Render();
+    return;
+  }
+
+  if (key == "8") {
+    app->toggleBaryon();
+    renderWindow->Render();
+    return;
+  }
+
+  if (key == "7") {
+    app->toggleDarkMatter();
+    renderWindow->Render();
+    return;
+  }
+
+  if (key == "6") {
+    app->toggleBaryonWind();
+    renderWindow->Render();
+    return;
+  }
+
+  if (key == "5") {
+    app->toggleBaryonStar();
+    renderWindow->Render();
+    return;
+  }
+
+  if (key == "4") {
+    app->toggleDarkAGN();
+    renderWindow->Render();
+    return;
+  }
+
   // Change amount of steps taken when the slider is moved with "[" and "]""
   if (key == "bracketleft") {
     app->lessSteps();

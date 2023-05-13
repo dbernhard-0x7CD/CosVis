@@ -23,6 +23,7 @@
 #include "../interactive/KeyPressInteractorStyle.hxx"
 #include "../interactive/TimeSliderCallback.hxx"
 #include "../processing/AssignClusterFilter.hxx"
+#include "../processing/ParticleTypeFilter.hxx"
 #include "../processing/CalculateTemperatureFilter.hxx"
 
 namespace fs = std::filesystem;
@@ -178,6 +179,16 @@ void VisCos::SetBackgroundColor(std::string color) {
   this->renderer->SetBackground(colors->GetColor3d("BkgColor").GetData());
 }
 
+/*
+  Current pipeline:
+    * dataset_readers
+    * activeReader      [chosen ]
+    * temperatureFilter
+    * clusterFilter
+    * particleTypeFilter
+    * glyph3D
+    * 
+*/
 void VisCos::SetupPipeline() {
   // First we set up the data pipeline
   vtkXMLPolyDataReader *activeReader;
@@ -206,8 +217,18 @@ void VisCos::SetupPipeline() {
   clusterFilter->SetExecuteMethod(AssignCluster, &clusterFilterParams);
   clusterFilter->Update();
 
+  // Filters on the different types of particles
+  particleTypeFilter->SetInputConnection(clusterFilter->GetOutputPort());
+
+  particleFilterParams.data = static_cast<vtkPolyData *>(clusterFilter->GetOutput());
+  particleFilterParams.filter = particleTypeFilter;
+  particleFilterParams.current_filter = static_cast<uint16_t>(Selector::BARYON_STAR);
+
+  particleTypeFilter->SetExecuteMethod(FilterType, &particleFilterParams);
+  particleTypeFilter->Update();
+
   glyph3D->SetSourceConnection(ptSource->GetOutputPort());
-  glyph3D->SetInputConnection(clusterFilter->GetOutputPort());
+  glyph3D->SetInputConnection(particleTypeFilter->GetOutputPort());
   glyph3D->Update();
 
   dataMapper->SetInputConnection(glyph3D->GetOutputPort());
@@ -278,6 +299,137 @@ void VisCos::lessSteps() {
   this->steps -= 10;
   this->timeSliderWidget->SetNumberOfAnimationSteps(this->steps);
   printf("New steps: %d\n", this->steps);
+}
+
+void VisCos::showAll() {
+  this->particleFilterParams.current_filter = static_cast<uint16_t>(Selector::ALL);
+  this->particleTypeFilter->Modified();
+  printf("Showing all particles.\n");
+}
+
+void VisCos::hideAll() {
+  this->particleFilterParams.current_filter = static_cast<uint16_t>(Selector::NONE);
+  this->particleTypeFilter->Modified();
+  printf("Hiding all particles.\n");
+}
+
+void VisCos::showBaryon() {
+  this->particleFilterParams.current_filter |= static_cast<uint16_t>(Selector::BARYON);
+  this->particleTypeFilter->Modified();
+  printf("Showing all baryon particles.\n");
+}
+void VisCos::hideBaryon() {
+  this->particleFilterParams.current_filter &= ~static_cast<uint16_t>(Selector::BARYON);
+  this->particleTypeFilter->Modified();
+  printf("Hiding all baryon particles.\n");
+}
+
+void VisCos::toggleBaryon() {
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON)) {
+    hideBaryon();
+  } else {
+    showBaryon();
+  }
+}
+
+void VisCos::showDarkMatter() {
+  this->particleFilterParams.current_filter |= static_cast<uint16_t>(Selector::DARK_MATTER);
+  this->particleTypeFilter->Modified();
+  printf("Showing DarkMatter particles.\n");
+}
+
+void VisCos::hideDarkMatter() {
+  this->particleFilterParams.current_filter &= ~static_cast<uint16_t>(Selector::DARK_MATTER);
+  this->particleTypeFilter->Modified();
+  printf("Hiding DarkMatter particles.\n");
+}
+
+void VisCos::toggleDarkMatter() {
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::DARK_MATTER)) {
+    hideDarkMatter();
+  } else {
+    showDarkMatter();
+  }
+}
+
+void VisCos::showBaryonStar() {
+  this->particleFilterParams.current_filter |= static_cast<uint16_t>(Selector::BARYON_STAR);
+  this->particleTypeFilter->Modified();
+  printf("Showing Baryon Star particles.\n");
+}
+
+void VisCos::hideBaryonStar() {
+  this->particleFilterParams.current_filter &= ~static_cast<uint16_t>(Selector::BARYON_STAR);
+  this->particleTypeFilter->Modified();
+  printf("Hiding Baryon Star particles.\n");
+}
+
+void VisCos::toggleBaryonStar() {
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_STAR)) {
+    hideBaryonStar();
+  } else {
+    showBaryonStar();
+  }
+}
+
+void VisCos::showBaryonWind() {
+  this->particleFilterParams.current_filter |= static_cast<uint16_t>(Selector::BARYON_WIND);
+  this->particleTypeFilter->Modified();
+  printf("Showing Baryon Wind particles.\n");
+}
+
+void VisCos::hideBaryonWind() {
+  this->particleFilterParams.current_filter &= ~static_cast<uint16_t>(Selector::BARYON_WIND);
+  this->particleTypeFilter->Modified();
+  printf("Hiding Baryon Wind particles.\n");
+}
+
+void VisCos::toggleBaryonWind() {
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_WIND)) {
+    hideBaryonWind();
+  } else {
+    showBaryonWind();
+  }
+}
+
+void VisCos::showBaryonSF() {
+  this->particleFilterParams.current_filter |= static_cast<uint16_t>(Selector::BARYON_STAR_FORMING);
+  this->particleTypeFilter->Modified();
+  printf("Showing baryon star forming particles\n");
+}
+
+void VisCos::hideBaryonSF() {
+  this->particleFilterParams.current_filter &= ~static_cast<uint16_t>(Selector::BARYON_STAR_FORMING);
+  this->particleTypeFilter->Modified();
+  printf("Hiding baryon star forming particles\n");
+}
+
+void VisCos::toggleBaryonSF() {
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_STAR_FORMING)) {
+    hideBaryonSF();
+  } else {
+    showBaryonSF();
+  }
+}
+
+void VisCos::showDarkAGN() {
+  this->particleFilterParams.current_filter |= static_cast<uint16_t>(Selector::DARK_AGN);
+  this->particleTypeFilter->Modified();
+  printf("Showing dark matter AGN particles\n");
+}
+
+void VisCos::hideDarkAGN() {
+  this->particleFilterParams.current_filter &= ~static_cast<uint16_t>(Selector::DARK_AGN);
+  this->particleTypeFilter->Modified();
+  printf("Hiding dark matter AGN particles\n");
+}
+
+void VisCos::toggleDarkAGN() {
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::DARK_AGN)) {
+    hideDarkAGN();
+  } else {
+    showDarkAGN();
+  }
 }
 
 void VisCos::Run() {
