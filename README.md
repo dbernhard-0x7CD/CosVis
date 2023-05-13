@@ -31,8 +31,7 @@ python ./python_scripts/run_clustering.py
 ```
 
 # TODO
-* create filter which takes data from UI and filters particles based on their type [CPP]
-   * first create particle filter in CPP; Selection: via keypress
+* Highlight AGNs and Star forming particles [VTK]
 * temperature in log [CPP]
 * animation in vtk [CPP]
 * particle tracer (center of galaxies)?
@@ -47,6 +46,8 @@ python ./python_scripts/run_clustering.py
 * 9th bit is only for dark-matter, this makes no sense
  
 # DONE
+ * create filter which takes data from UI and filters particles based on their type [CPP]
+   * first create particle filter in CPP; Selection: via keypress
  * w,a,s,d to move eyes [CPP]
  * Switch between temperature and clustering [CPP]
  * create animation of clustering [paraview]
