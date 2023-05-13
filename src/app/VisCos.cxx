@@ -222,7 +222,7 @@ void VisCos::SetupPipeline() {
 
   particleFilterParams.data = static_cast<vtkPolyData *>(clusterFilter->GetOutput());
   particleFilterParams.filter = particleTypeFilter;
-  particleFilterParams.current_filter = static_cast<uint16_t>(Selector::BARYON_STAR);
+  particleFilterParams.current_filter = static_cast<uint16_t>(Selector::ALL);
 
   particleTypeFilter->SetExecuteMethod(FilterType, &particleFilterParams);
   particleTypeFilter->Update();
