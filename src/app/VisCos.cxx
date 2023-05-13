@@ -92,6 +92,7 @@ void VisCos::MoveToTimestep(int step) {
            step);
     return;
   }
+  if (step == this->active_timestep) return;
 
   // Set the active reader and get its output to be the polydata
   activeReader = dataset_readers.at((vtkIdType)step);
