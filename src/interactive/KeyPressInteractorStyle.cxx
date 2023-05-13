@@ -195,6 +195,16 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
+  // Print keyboard shortcuts with "h" (help)
+  if (key == "h") {
+    printf("Keyboard keybindings:");
+    printf("\t* Move camera with arrow keys\n");
+    printf("\t* Look around with 'w,a,s,d'\n");
+    printf("\t* Switch between temperature and cluster with 'c' and 't'");
+    printf("\t* Change amount of steps taken for moving to a timestep with '[' and ']'");
+    printf("\t* Quit with 'q'");
+  }
+
   // Output the key that was pressed
   printf("Pressed unhandled %s\n", key.c_str());
 
