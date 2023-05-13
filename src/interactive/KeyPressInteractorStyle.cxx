@@ -239,12 +239,19 @@ void KeyPressInteractorStyle::OnKeyPress() {
 
   // Print keyboard shortcuts with "h" (help)
   if (key == "h") {
-    printf("Keyboard keybindings:");
-    printf("\t* Move camera with arrow keys\n");
-    printf("\t* Look around with 'w,a,s,d'\n");
-    printf("\t* Switch between temperature and cluster with 'c' and 't'");
-    printf("\t* Change amount of steps taken for moving to a timestep with '[' and ']'");
-    printf("\t* Quit with 'q'");
+    printf("Keyboard keybindings:\n");
+    printf("  * Move camera with arrow keys\n");
+    printf("  * Look around with 'w,a,s,d'\n");
+    printf("  * Switch between temperature and cluster with 'c' and 't'\n");
+    printf("  * Change amount of steps taken for moving to a timestep with '[' and ']'\n");
+    printf("  * '0' to show all particles\n");
+    printf("  * '9' to show no particles\n");
+    printf("  * '8' to toggle baryon particles\n");
+    printf("  * '7' to toggle dark matter particles\n");
+    printf("  * '6' to toggle baryon wind particles\n");
+    printf("  * '5' to toggle baryon star particles\n");
+    printf("  * '4' to toggle AGN particles\n");
+    printf("  * Quit with 'q'\n");
   }
 
   // Output the key that was pressed
