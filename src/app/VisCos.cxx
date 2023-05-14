@@ -290,13 +290,13 @@ void VisCos::SetupPipeline() {
 }
 
 void VisCos::moreSteps() {
-  this->steps += 10;
+  this->steps *= 1.1;
   this->timeSliderWidget->SetNumberOfAnimationSteps(this->steps);
   printf("New steps: %d\n", this->steps);
 }
 
 void VisCos::lessSteps() {
-  this->steps -= 10;
+  this->steps *= 0.9;
   this->timeSliderWidget->SetNumberOfAnimationSteps(this->steps);
   printf("New steps: %d\n", this->steps);
 }
