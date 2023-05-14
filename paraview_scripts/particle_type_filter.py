@@ -2,10 +2,10 @@ polydata = inputs[0]
 # version 0.1
 ALL =                      0b0 # This is not a bitmask
 BARYON =               0b10
-DARK_MATTER =     0b1000000000 # This is not a bitmask
-BARYON_STAR =      0b100000
-BARYON_WIND =     0b1000000
-BARYON_STAR_FORMING =  0b10000000
+DARK_MATTER =         0b1000000000 # This is not a bitmask
+BARYON_STAR =             0b100000
+BARYON_WIND =            0b1000000
+BARYON_STAR_FORMING =   0b10000000
 DARK_AGN =             0b100000000
 
 SELECTOR = DARK_MATTER
