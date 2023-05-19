@@ -228,6 +228,13 @@ void KeyPressInteractorStyle::OnKeyPress() {
   }
 
   if (key == "4") {
+    app->toggleBaryonSF();
+    app->UpdateVisbleParticlesText();
+    renderWindow->Render();
+    return;
+  }
+
+  if (key == "2") {
     app->toggleDarkAGN();
     app->UpdateVisbleParticlesText();
     renderWindow->Render();
@@ -257,7 +264,8 @@ void KeyPressInteractorStyle::OnKeyPress() {
     printf("  * '7' to toggle dark matter particles\n");
     printf("  * '6' to toggle baryon wind particles\n");
     printf("  * '5' to toggle baryon star particles\n");
-    printf("  * '4' to toggle AGN particles\n");
+    printf("  * '4' to toggle baryon star forming\n");
+    printf("  * '2' to toggle AGN particles\n");
     printf("  * 'n' to print the current position\n");
     printf("  * Quit with 'q'\n");
   }

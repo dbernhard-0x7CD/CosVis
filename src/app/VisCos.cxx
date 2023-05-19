@@ -457,7 +457,7 @@ void VisCos::UpdateVisbleParticlesText() {
 
   // 6
   if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_WIND)) {
-    visParticles += "Wind particles, ";
+    visParticles += "Wind, ";
   }
 
   // 5
@@ -466,8 +466,13 @@ void VisCos::UpdateVisbleParticlesText() {
   }
 
   // 4
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_STAR_FORMING)) {
+    visParticles += "Star forming, ";
+  }
+
+  // 2
   if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::DARK_AGN)) {
-    visParticles += "AGNs, ";
+    visParticles += "AGN, ";
   }
 
   // Remove the last two characters
