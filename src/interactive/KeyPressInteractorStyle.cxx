@@ -187,42 +187,49 @@ void KeyPressInteractorStyle::OnKeyPress() {
 
   if (key == "0") {
     app->showAll();
+    app->UpdateVisbleParticlesText();
     renderWindow->Render();
     return;
   }
 
   if (key == "9") {
     app->hideAll();
+    app->UpdateVisbleParticlesText();
     renderWindow->Render();
     return;
   }
 
   if (key == "8") {
     app->toggleBaryon();
+    app->UpdateVisbleParticlesText();
     renderWindow->Render();
     return;
   }
 
   if (key == "7") {
     app->toggleDarkMatter();
+    app->UpdateVisbleParticlesText();
     renderWindow->Render();
     return;
   }
 
   if (key == "6") {
     app->toggleBaryonWind();
+    app->UpdateVisbleParticlesText();
     renderWindow->Render();
     return;
   }
 
   if (key == "5") {
     app->toggleBaryonStar();
+    app->UpdateVisbleParticlesText();
     renderWindow->Render();
     return;
   }
 
   if (key == "4") {
     app->toggleDarkAGN();
+    app->UpdateVisbleParticlesText();
     renderWindow->Render();
     return;
   }

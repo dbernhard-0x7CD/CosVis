@@ -75,6 +75,8 @@ private:
   AssignClusterParams clusterFilterParams;
   particleTypeFilterParams particleFilterParams;
   vtkNew<TimeSliderCallback> timeSliderCallback;
+  vtkTextActor* visibleParticlesText;
+
 
 public:
   VisCos(int initial_active_timestep, std::string data_folder_path,
@@ -120,6 +122,8 @@ public:
   void showDarkAGN();
   void hideDarkAGN();
   void toggleDarkAGN();
+
+  void UpdateVisbleParticlesText();
 
   void Run();
 };

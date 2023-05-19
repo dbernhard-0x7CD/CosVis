@@ -15,6 +15,8 @@
 #include <vtkProperty.h>
 #include <vtkSliderRepresentation.h>
 #include <vtkSliderRepresentation2D.h>
+#include <vtkTextActor.h>
+#include <vtkTextProperty.h>
 #include <vtkType.h>
 #include <vtkTypeInt64Array.h>
 #include <vtkXMLPolyDataReader.h>
@@ -432,6 +434,54 @@ void VisCos::toggleDarkAGN() {
   }
 }
 
+void VisCos::UpdateVisbleParticlesText() {
+  if (this->particleFilterParams.current_filter == static_cast<uint16_t>(Selector::ALL)) {
+    this->visibleParticlesText->SetInput("Visible particles: ALL");
+    this->visibleParticlesText->Modified();
+    return;
+  }
+  if (this->particleFilterParams.current_filter == static_cast<uint16_t>(Selector::NONE)) {
+    this->visibleParticlesText->SetInput("Visible particles: NONE");
+    this->visibleParticlesText->Modified();
+    return;
+  }
+
+  std::string visParticles("Visible particles: ");
+
+  // 8
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON)) {
+    visParticles += "Baryons, ";
+  }
+
+  // 7
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::DARK_MATTER)) {
+    visParticles += "Dark matter, ";
+  }
+
+  // 6
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_WIND)) {
+    visParticles += "Wind particles, ";
+  }
+
+  // 5
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_STAR)) {
+    visParticles += "Stars, ";
+  }
+
+  // 4
+  if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::DARK_AGN)) {
+    visParticles += "AGNs, ";
+  }
+
+  // Remove the last two characters
+  visParticles.pop_back();
+  visParticles.pop_back();
+
+  // Update visible text
+  this->visibleParticlesText->SetInput(visParticles.c_str());
+  this->visibleParticlesText->Modified();
+}
+
 void VisCos::Run() {
   timeSliderRepr->SetMinimumValue(0.0);
   timeSliderRepr->SetMaximumValue(625);
@@ -448,9 +498,22 @@ void VisCos::Run() {
   timeSliderWidget->SetAnimationModeToAnimate();
   timeSliderWidget->On();
 
+  // Show which particles are visible
+  vtkNew<vtkTextActor> visibleParticlesText;
+  this->visibleParticlesText = visibleParticlesText;
+
+  this->visibleParticlesText->SetInput("Visible particles: ");
+  this->visibleParticlesText->GetPositionCoordinate()->SetCoordinateSystemToNormalizedDisplay();
+  this->visibleParticlesText->SetPosition(0.02, 0.95);
+  this->visibleParticlesText->GetTextProperty()->SetFontSize(24);
+  this->visibleParticlesText->GetTextProperty()->SetColor(colors->GetColor3d("White").GetData());
+  renderer->AddActor2D(visibleParticlesText);
+
   // Register callback
   timeSliderWidget->AddObserver(vtkCommand::InteractionEvent,
                                 timeSliderCallback);
+
+  this->UpdateVisbleParticlesText();
 
   // This starts the event loop and as a side effect causes an initial render.
   renderWindow->Render();
