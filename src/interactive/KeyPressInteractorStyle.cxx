@@ -261,6 +261,8 @@ void KeyPressInteractorStyle::OnKeyPress() {
     printf("  * Quit with 'q'\n");
   }
 
+  if (key == "q" || key == "Super_L") return;
+
   // Output the key that was pressed
   printf("Pressed unhandled %s\n", key.c_str());
 
