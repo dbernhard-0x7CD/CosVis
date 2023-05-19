@@ -258,7 +258,16 @@ void KeyPressInteractorStyle::OnKeyPress() {
     printf("  * '6' to toggle baryon wind particles\n");
     printf("  * '5' to toggle baryon star particles\n");
     printf("  * '4' to toggle AGN particles\n");
+    printf("  * 'n' to print the current position\n");
     printf("  * Quit with 'q'\n");
+  }
+
+  if (key == "n") {
+    double pos[3];
+    this->camera->GetPosition(pos);
+
+    printf("Current position is %f %f %f\n", pos[0], pos[1], pos[2]);
+    return;
   }
 
   if (key == "q" || key == "Super_L") return;
