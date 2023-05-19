@@ -437,10 +437,10 @@ void VisCos::Run() {
   timeSliderRepr->SetMaximumValue(625);
   timeSliderRepr->SetValue((double)this->active_timestep);
   timeSliderRepr->SetTitleText("Timestep");
-  timeSliderRepr->GetPoint1Coordinate()->SetCoordinateSystemToDisplay();
-  timeSliderRepr->GetPoint1Coordinate()->SetValue(40, 80);
-  timeSliderRepr->GetPoint2Coordinate()->SetCoordinateSystemToDisplay();
-  timeSliderRepr->GetPoint2Coordinate()->SetValue(320, 80);
+  timeSliderRepr->GetPoint1Coordinate()->SetCoordinateSystemToNormalizedDisplay();
+  timeSliderRepr->GetPoint1Coordinate()->SetValue(0.05, 0.10);
+  timeSliderRepr->GetPoint2Coordinate()->SetCoordinateSystemToNormalizedDisplay();
+  timeSliderRepr->GetPoint2Coordinate()->SetValue(0.35, 0.10);
 
   timeSliderWidget->SetInteractor(renderWindowInteractor);
   timeSliderWidget->SetRepresentation(timeSliderRepr);
