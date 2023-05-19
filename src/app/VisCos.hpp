@@ -39,6 +39,8 @@ class VisCos {
 private:
   bool loaded = false;
   bool setup = false;
+
+  // The currently active timestep of the data
   int active_timestep;
 
   // Number of steps to take when the slider was moved
@@ -53,6 +55,10 @@ private:
   vtkXMLPolyDataReader *activeReader;
   vtkNew<vtkNamedColors> colors;
   vtkNew<vtkPointSource> ptSource;
+
+  // The mapper is responsible for pushing the geometry into the graphics
+  // library. It may also do color mapping, if scalars or other attributes are
+  // defined.
   vtkNew<vtkPolyDataMapper> dataMapper;
   vtkNew<vtkLookupTable> tempLUT = GetTemperatureLUT();
   vtkNew<vtkLookupTable> clusterLUT = GetClusterLUT();

@@ -121,9 +121,6 @@ void VisCos::MoveToTimestep(int step) {
 }
 
 void VisCos::ShowClusters() {
-  // The mapper is responsible for pushing the geometry into the graphics
-  // library. It may also do color mapping, if scalars or other attributes are
-  // defined.
   this->dataMapper->ScalarVisibilityOn();
   this->dataMapper->SelectColorArray("Cluster");
 
@@ -184,7 +181,7 @@ void VisCos::SetBackgroundColor(std::string color) {
 /*
   Current pipeline:
     * dataset_readers
-    * activeReader      [chosen ]
+    * activeReader      [chosen timestep]
     * temperatureFilter
     * clusterFilter
     * particleTypeFilter
