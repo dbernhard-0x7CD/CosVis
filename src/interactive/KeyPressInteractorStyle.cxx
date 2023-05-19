@@ -140,20 +140,6 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
-  if (key == "k") {
-    double pos[3];
-    camera->GetPosition(pos);
-    pos[0] = pos[0] + 1;
-    camera->SetPosition(pos);
-  }
-
-  if (key == "n") {
-    double pos[3];
-    camera->GetPosition(pos);
-    pos[0] = pos[0] + 1;
-    camera->SetPosition(pos);
-  }
-
   if (key == "a") {
     camera->Yaw(2);
     camera->Modified();
