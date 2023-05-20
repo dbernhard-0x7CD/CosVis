@@ -16,7 +16,7 @@ public:
   static KeyPressInteractorStyle *New();
 
   VisCos *app;
-  vtkActor* actor;
+  vtkActor* manyParticlesActor;
   vtkRenderWindow *renderWindow;
   vtkPolyDataMapper* dataMapper;
 

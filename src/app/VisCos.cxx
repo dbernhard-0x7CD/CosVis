@@ -27,6 +27,7 @@
 #include "../processing/AssignClusterFilter.hxx"
 #include "../processing/ParticleTypeFilter.hxx"
 #include "../processing/CalculateTemperatureFilter.hxx"
+#include "../processing/PointToPolyDataFilter.hxx"
 
 namespace fs = std::filesystem;
 
@@ -38,8 +39,11 @@ VisCos::VisCos(int initial_active_timestep, std::string data_folder_path,
   this->timeSliderCallback->app = this;
   this->keyboardInteractorStyle->app = this;
   this->keyboardInteractorStyle->renderWindow = this->renderWindow;
-  this->keyboardInteractorStyle->actor = this->actor;
+  this->keyboardInteractorStyle->manyParticlesActor = this->manyParticlesActor;
   this->keyboardInteractorStyle->dataMapper = this->dataMapper;
+
+  this->singlePointSource->SetCenter(0, 0, 0);
+  this->singlePointSource->SetNumberOfPoints(1);
 }
 
 void VisCos::Load() {
@@ -129,17 +133,17 @@ void VisCos::ShowClusters() {
   this->dataMapper->SetLookupTable(this->clusterLUT);
   this->dataMapper->InterpolateScalarsBeforeMappingOff();
 
-  this->actor->GetProperty()->SetPointSize(1.0);
-  this->actor->GetProperty()->SetOpacity(0.5);
-  this->actor->GetProperty()->SetLighting(1.0);
-  this->actor->GetProperty()->SetAmbient(0.2);
-  // this->actor->GetProperty()->SetDiffuse(0.5);
-  this->actor->GetProperty()->RenderPointsAsSpheresOn();
-  this->scalarBarWidget->Off();
+  this->manyParticlesActor->GetProperty()->SetLighting(1.0);
+  this->manyParticlesActor->GetProperty()->RenderPointsAsSpheresOn();
+  this->manyParticlesActor->GetProperty()->SetAmbient(0.2);
+  this->manyParticlesActor->GetProperty()->SetPointSize(1.0);
+  this->manyParticlesActor->GetProperty()->SetOpacity(0.5);
+  this->manyParticlesActor->Modified();
 
   this->camera->Modified();
 
   this->dataMapper->Update();
+  this->scalarBarWidget->Off();
   this->renderWindow->Render();
 }
 
@@ -153,12 +157,11 @@ void VisCos::ShowTemperature() {
   this->dataMapper->Modified();
   this->dataMapper->Update();
 
-  // this->actor->GetProperty()->SetLighting(0.0);
-  this->actor->GetProperty()->SetPointSize(1.2);
-  this->actor->GetProperty()->SetAmbient(2.3);
-  this->actor->GetProperty()->SetPointSize(0.3);
-  this->actor->GetProperty()->SetOpacity(0.7);
-  this->actor->Modified();
+  // this->manyParticlesActor->GetProperty()->SetLighting(0.0);
+  this->manyParticlesActor->GetProperty()->SetAmbient(2.3);
+  this->manyParticlesActor->GetProperty()->SetPointSize(0.3);
+  this->manyParticlesActor->GetProperty()->SetOpacity(0.7);
+  this->manyParticlesActor->Modified();
 
   this->scalarBarWidget->On();
   this->scalarBarWidget->Modified();
@@ -226,7 +229,7 @@ void VisCos::SetupPipeline() {
   particleTypeFilter->SetExecuteMethod(FilterType, &particleFilterParams);
   particleTypeFilter->Update();
 
-  glyph3D->SetSourceConnection(ptSource->GetOutputPort());
+  glyph3D->SetSourceConnection(singlePointSource->GetOutputPort());
   glyph3D->SetInputConnection(particleTypeFilter->GetOutputPort());
   glyph3D->Update();
 
@@ -235,7 +238,32 @@ void VisCos::SetupPipeline() {
   dataMapper->SetScalarModeToUsePointFieldData();
   dataMapper->SelectColorArray("mass");
 
-  actor->SetMapper(dataMapper);
+  manyParticlesActor->SetMapper(dataMapper);
+
+  // Set up data mapper for interesting particles
+  vtkNew<vtkPoints> interestingPoints;
+  vtkNew<vtkPolyData> importantPointsData;
+  vtkNew<vtkGlyph3D> importantGlyph;
+
+  interestingPoints->InsertNextPoint(3, 36, 18);
+  importantPointsData->SetPoints(interestingPoints);
+
+  vtkNew<PointToPolyDataFilter> pointToPolyDataFilter;
+  pointToPolyDataFilter->SetInputData(importantPointsData);
+  pointToPolyDataFilter->Update();
+
+  importantGlyph->SetSourceConnection(singlePointSource->GetOutputPort());
+  importantGlyph->SetInputConnection(pointToPolyDataFilter->GetOutputPort());
+  importantGlyph->Update();
+
+  interestingDataMapper->SetInputConnection(importantGlyph->GetOutputPort());
+  interestingDataMapper->SetScalarModeToUsePointFieldData();
+
+  interestingParticlesActor->GetProperty()->RenderPointsAsSpheresOn();
+  interestingParticlesActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
+  interestingParticlesActor->GetProperty()->SetPointSize(15.0);
+  
+  interestingParticlesActor->SetMapper(interestingDataMapper);
 
   // Now setup some GUI/Interaction elements
   // create the scalarBarWidget
@@ -254,7 +282,8 @@ void VisCos::SetupPipeline() {
   renderWindowInteractor->SetRenderWindow(renderWindow);
   renderWindowInteractor->Initialize();
 
-  renderer->AddActor(actor);
+  renderer->AddActor(manyParticlesActor);
+  renderer->AddActor(interestingParticlesActor);
 
   // Scalar bar for the particle colors when showing the temperature
   scalarBarActor->SetOrientationToVertical();

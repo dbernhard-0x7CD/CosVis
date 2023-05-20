@@ -54,16 +54,18 @@ private:
   std::map<int, int> clusters;
   vtkXMLPolyDataReader *activeReader;
   vtkNew<vtkNamedColors> colors;
-  vtkNew<vtkPointSource> ptSource;
+  vtkNew<vtkPointSource> singlePointSource;
 
   // The mapper is responsible for pushing the geometry into the graphics
   // library. It may also do color mapping, if scalars or other attributes are
   // defined.
   vtkNew<vtkPolyDataMapper> dataMapper;
+  vtkNew<vtkPolyDataMapper> interestingDataMapper;
   vtkNew<vtkLookupTable> tempLUT = GetTemperatureLUT();
   vtkNew<vtkLookupTable> clusterLUT = GetClusterLUT();
   vtkNew<vtkRenderer> renderer;
-  vtkNew<vtkActor> actor;
+  vtkNew<vtkActor> manyParticlesActor;
+  vtkNew<vtkActor> interestingParticlesActor;
   vtkNew<vtkRenderWindow> renderWindow;
   vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
   vtkNew<vtkScalarBarWidget> scalarBarWidget;
