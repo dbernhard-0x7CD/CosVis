@@ -11,6 +11,8 @@ find_package(VTK COMPONENTS
   CommonColor
   CommonCore
   CommonDataModel
+  FiltersSources
+  FiltersModeling
   FiltersProgrammable
   IOXML
   InteractionStyle
@@ -20,8 +22,6 @@ find_package(VTK COMPONENTS
   RenderingFreeType
   RenderingGL2PSOpenGL2
   RenderingOpenGL2
-  FiltersModeling
-  FiltersSources
   InteractionStyle
   InteractionWidgets
 )
