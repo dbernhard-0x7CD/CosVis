@@ -10,7 +10,6 @@ enum class Selector;
 struct particleTypeFilterParams {
   vtkPolyData *data;
   vtkProgrammableFilter *filter;
-  vtkPolyDataMapper *mapper;
   uint16_t current_filter;
 };
 
