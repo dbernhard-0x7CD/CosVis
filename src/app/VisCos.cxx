@@ -39,7 +39,6 @@ VisCos::VisCos(int initial_active_timestep, std::string data_folder_path,
   this->timeSliderCallback->app = this;
   this->keyboardInteractorStyle->app = this;
   this->keyboardInteractorStyle->renderWindow = this->renderWindow;
-  this->keyboardInteractorStyle->manyParticlesActor = this->manyParticlesActor;
   this->keyboardInteractorStyle->dataMapper = this->dataMapper;
 
   this->singlePointSource->SetCenter(0, 0, 0);
