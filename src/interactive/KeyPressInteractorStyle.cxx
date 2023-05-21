@@ -141,6 +141,11 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
+  if (key == "i") {
+    app->ShowPhi();
+    return;
+  }
+
   if (key == "a") {
     camera->Yaw(2);
     camera->Modified();
@@ -254,8 +259,10 @@ void KeyPressInteractorStyle::OnKeyPress() {
     printf("Keyboard keybindings:\n");
     printf("  * Move camera with arrow keys\n");
     printf("  * Look around with 'w,a,s,d'\n");
-    printf("  * Switch between temperature and cluster with 'c' and 't'\n");
     printf("  * Change amount of steps taken for moving to a timestep with '[' and ']'\n");
+    printf("  * 't' to show the temperature\n");
+    printf("  * 'c' to show the clustering\n");
+    printf("  * 'i' to show phi (gravitational potential)\n");
     printf("  * '0' to show all particles\n");
     printf("  * '9' to show no particles\n");
     printf("  * '8' to toggle baryon particles\n");

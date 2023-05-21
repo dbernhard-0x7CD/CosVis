@@ -69,6 +69,8 @@ private:
   vtkNew<vtkPolyDataMapper> interestingDataMapper;
   vtkNew<vtkLookupTable> tempLUT = GetTemperatureLUT();
   vtkNew<vtkLookupTable> clusterLUT = GetClusterLUT();
+  vtkNew<vtkLookupTable> phiLUT = GetPhiLUT();
+
   vtkNew<vtkRenderer> renderer;
 
   // Actors
@@ -116,6 +118,7 @@ public:
 
   void ShowTemperature();
   void ShowClusters();
+  void ShowPhi();
 
   void SetupPipeline();
 

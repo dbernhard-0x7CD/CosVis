@@ -23,6 +23,20 @@ vtkNew<vtkLookupTable> GetTemperatureLUT() {
   return lut;
 }
 
+vtkNew<vtkLookupTable> GetPhiLUT() {
+  // LUT for coloring the particles
+  vtkNew<vtkLookupTable> lut;
+
+  lut->SetHueRange(0.667, 0.0);
+  // lut->SetAlphaRange(0.3, 0.7);
+  lut->SetTableRange(-500.0, 90);
+  lut->SetNumberOfColors(512);
+
+  lut->Build();
+
+  return lut;
+}
+
 vtkNew<vtkLookupTable> GetClusterLUT() {
   vtkNew<vtkLookupTable> lut;
 

@@ -46,6 +46,8 @@ python ./python_scripts/run_clustering.py
 * 9th bit is only for dark-matter, this makes no sense
  
 # DONE
+* visualize phi (graphitational potential)
+   * shows where the center of mass of the universe is
  * create filter which takes data from UI and filters particles based on their type [CPP]
    * first create particle filter in CPP; Selection: via keypress
  * w,a,s,d to move eyes [CPP]

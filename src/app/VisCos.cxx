@@ -160,8 +160,8 @@ void VisCos::ShowTemperature() {
   this->dataMapper->SelectColorArray("Temperature");
   this->dataMapper->InterpolateScalarsBeforeMappingOn();
   this->dataMapper->SetLookupTable(this->tempLUT);
+  this->dataMapper->SetScalarRange(0, 7000);
   this->dataMapper->Modified();
-  this->dataMapper->Update();
 
   this->manyParticlesActor->GetProperty()->SetLighting(5.0);
   this->manyParticlesActor->GetProperty()->SetAmbient(2.3);
@@ -169,13 +169,37 @@ void VisCos::ShowTemperature() {
   this->manyParticlesActor->GetProperty()->SetOpacity(0.3);
   this->manyParticlesActor->Modified();
 
-  this->scalarBarWidget->On();
+  this->scalarBarActor->SetLookupTable(tempLUT);
+  this->scalarBarActor->Modified();
   this->scalarBarWidget->Modified();
-  this->temperatureFilterParams.filter->Modified();
+  this->scalarBarWidget->On();
   this->camera->Modified();
 
   this->temperatureFilterParams.filter->Update();
   this->dataMapper->Update();
+  this->scalarBarWidget->Render();
+  this->renderWindow->Render();
+}
+
+void VisCos::ShowPhi() {
+  this->dataMapper->SelectColorArray("phi");
+  this->dataMapper->InterpolateScalarsBeforeMappingOn();
+  this->dataMapper->SetScalarRange(this->phiLUT->GetRange());
+  this->dataMapper->SetLookupTable(this->phiLUT);
+  this->dataMapper->Modified();
+  this->dataMapper->Update();
+
+  this->manyParticlesActor->GetProperty()->SetAmbient(1.0);
+  this->manyParticlesActor->GetProperty()->SetPointSize(1.5);
+  this->manyParticlesActor->GetProperty()->SetOpacity(0.07);
+
+  this->scalarBarActor->SetLookupTable(this->phiLUT);
+  this->scalarBarActor->Modified();
+  this->scalarBarWidget->Modified();
+  this->scalarBarWidget->On();
+
+  this->camera->Modified();
+
   this->scalarBarWidget->Render();
   this->renderWindow->Render();
 }
@@ -233,14 +257,13 @@ void VisCos::SetupPipeline() {
   particleTypeFilter->SetExecuteMethod(FilterType, &particleFilterParams);
   particleTypeFilter->Update();
 
+  // Glyph
   glyph3D->SetSourceConnection(singlePointSource->GetOutputPort());
   glyph3D->SetInputConnection(particleTypeFilter->GetOutputPort());
   glyph3D->Update();
 
   dataMapper->SetInputConnection(glyph3D->GetOutputPort());
   dataMapper->SetScalarModeToUsePointFieldData();
-  dataMapper->SelectColorArray("mass");
-  dataMapper->SetScalarRange(0, 7000);
 
   manyParticlesActor->SetMapper(dataMapper);
 
@@ -525,6 +548,14 @@ void VisCos::UpdateGUIElements() {
   this->textBaryonStar->SetPosition(d[0] * size[0], d[1] * size[1] - 4*24);
   this->textBaryonStarForming->SetPosition(d[0] * size[0], d[1] * size[1] - 5*24);
   this->textAGN->SetPosition(d[0] * size[0], d[1] * size[1] - 6*24);
+
+  this->scalarBarActor->Modified();
+  this->scalarBarWidget->Modified();
+
+  this->camera->Modified();
+
+  this->scalarBarWidget->Render();
+  this->renderWindow->Render();
 }
 
 void VisCos::Run() {
