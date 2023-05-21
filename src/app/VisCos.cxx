@@ -319,7 +319,7 @@ void VisCos::SetupPipeline() {
 }
 
 void VisCos::moreSteps() {
-  this->steps *= 1.1;
+  this->steps = std::max(this->steps * 1.1, this->steps + 1.0);
   this->timeSliderWidget->SetNumberOfAnimationSteps(this->steps);
   printf("New steps: %d\n", this->steps);
 }
