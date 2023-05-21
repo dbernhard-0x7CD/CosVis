@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  VisCos app(100, data_folder_path, cluster_path);
+  VisCos app(566, data_folder_path, cluster_path);
 
   // Load the data
   app.Load();
