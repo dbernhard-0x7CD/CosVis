@@ -86,16 +86,23 @@ private:
   vtkNew<vtkSliderWidget> timeSliderWidget;
 
   // Filters
+  TempFilterParams temperatureFilterParams;
   vtkNew<vtkProgrammableFilter> temperatureFilter;
+
+  AssignClusterParams clusterFilterParams;
   vtkNew<vtkProgrammableFilter> clusterFilter;
+
+  particleTypeFilterParams particleFilterParams;
   vtkNew<vtkProgrammableFilter> particleTypeFilter;
+
+  // Various
   vtkNew<vtkGlyph3D> glyph3D;
   vtkNew<vtkCamera> camera;
   vtkNew<KeyPressInteractorStyle> keyboardInteractorStyle;
+  vtkNew<vtkSPHQuinticKernel> kernel;
+  vtkNew<vtkStructuredPoints> source;
+  vtkNew<vtkSPHInterpolator> interpolator;
 
-  TempFilterParams temperatureFilterParams;
-  AssignClusterParams clusterFilterParams;
-  particleTypeFilterParams particleFilterParams;
   vtkNew<TimeSliderCallback> timeSliderCallback;
   vtkNew<ResizeWindowCallback> resizeCallback;
 
