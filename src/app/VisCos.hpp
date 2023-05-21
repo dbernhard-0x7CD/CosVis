@@ -51,6 +51,8 @@ private:
   std::string cluster_path;
   double tempRange[2];
   std::map<int, vtkXMLPolyDataReader *> dataset_readers;
+
+  // Maps point IDs to their cluster ID
   std::map<int, int> clusters;
   vtkXMLPolyDataReader *activeReader;
   vtkNew<vtkNamedColors> colors;
@@ -64,14 +66,20 @@ private:
   vtkNew<vtkLookupTable> tempLUT = GetTemperatureLUT();
   vtkNew<vtkLookupTable> clusterLUT = GetClusterLUT();
   vtkNew<vtkRenderer> renderer;
+
+  // Actors
   vtkNew<vtkActor> manyParticlesActor;
   vtkNew<vtkActor> interestingParticlesActor;
+
+  // Visual stuff
   vtkNew<vtkRenderWindow> renderWindow;
   vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
   vtkNew<vtkScalarBarWidget> scalarBarWidget;
   vtkNew<vtkScalarBarActor> scalarBarActor;
   vtkNew<vtkSliderRepresentation2D> timeSliderRepr;
   vtkNew<vtkSliderWidget> timeSliderWidget;
+
+  // Filters
   vtkNew<vtkProgrammableFilter> temperatureFilter;
   vtkNew<vtkProgrammableFilter> clusterFilter;
   vtkNew<vtkProgrammableFilter> particleTypeFilter;

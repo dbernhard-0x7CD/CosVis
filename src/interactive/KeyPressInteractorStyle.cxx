@@ -10,9 +10,7 @@
 #include "../interactive/KeyPressInteractorStyle.hxx"
 #include "../app/VisCos.hpp"
 
-// Define interaction style
 void KeyPressInteractorStyle::OnKeyPress() {
-  // Get the keypress
   vtkRenderWindowInteractor *rwi = this->Interactor;
   std::string key = rwi->GetKeySym();
 

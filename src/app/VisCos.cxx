@@ -173,7 +173,6 @@ void VisCos::ShowTemperature() {
 }
 
 void VisCos::SetBackgroundColor(std::string color) {
-  // Set the background color.
   this->colors->SetColor("BkgColor", color);
 
   this->renderer->SetBackground(colors->GetColor3d("BkgColor").GetData());
@@ -209,8 +208,7 @@ void VisCos::SetupPipeline() {
   // This filter adds a column with the cluster index
   clusterFilter->SetInputData(temperatureFilter->GetOutput());
 
-  clusterFilterParams.data =
-      static_cast<vtkPolyData *>(temperatureFilter->GetOutput());
+  clusterFilterParams.data = static_cast<vtkPolyData *>(temperatureFilter->GetOutput());
   clusterFilterParams.filter = clusterFilter;
   clusterFilterParams.clustering = &clusters;
 
@@ -232,7 +230,6 @@ void VisCos::SetupPipeline() {
   glyph3D->Update();
 
   dataMapper->SetInputConnection(glyph3D->GetOutputPort());
-
   dataMapper->SetScalarModeToUsePointFieldData();
   dataMapper->SelectColorArray("mass");
 
