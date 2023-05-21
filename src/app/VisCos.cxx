@@ -74,6 +74,9 @@ void VisCos::Load() {
   for (vtkIdType i = 0; i < num; i++) {
     int id = ids->GetValue(i);
     int cluster = carr->GetValue(i);
+
+    // map to positive values as negative values do not work with the 
+    // color lookup table (LUT)
     if (cluster == -1) {
       clusters.insert_or_assign(id, 26);
     } else {
