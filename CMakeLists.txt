@@ -34,7 +34,6 @@ add_executable(${PROJECT_NAME}
   ./src/processing/CalculateTemperatureFilter.cxx
   ./src/processing/ParticleTypeFilter.cxx
   ./src/processing/AssignClusterFilter.cxx
-  ./src/processing/PointToPolyDataFilter.cxx
   ./src/data/Loader.cxx)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)

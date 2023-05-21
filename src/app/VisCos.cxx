@@ -27,7 +27,6 @@
 #include "../processing/AssignClusterFilter.hxx"
 #include "../processing/ParticleTypeFilter.hxx"
 #include "../processing/CalculateTemperatureFilter.hxx"
-#include "../processing/PointToPolyDataFilter.hxx"
 
 namespace fs = std::filesystem;
 
@@ -247,12 +246,9 @@ void VisCos::SetupPipeline() {
   interestingPoints->InsertNextPoint(3, 36, 18);
   importantPointsData->SetPoints(interestingPoints);
 
-  vtkNew<PointToPolyDataFilter> pointToPolyDataFilter;
-  pointToPolyDataFilter->SetInputData(importantPointsData);
-  pointToPolyDataFilter->Update();
 
   importantGlyph->SetSourceConnection(singlePointSource->GetOutputPort());
-  importantGlyph->SetInputConnection(pointToPolyDataFilter->GetOutputPort());
+  importantGlyph->SetInputData(importantPointsData);
   importantGlyph->Update();
 
   interestingDataMapper->SetInputConnection(importantGlyph->GetOutputPort());
