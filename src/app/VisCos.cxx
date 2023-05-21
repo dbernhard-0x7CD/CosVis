@@ -272,7 +272,7 @@ void VisCos::SetupPipeline() {
   vtkNew<vtkPolyData> importantPointsData;
   vtkNew<vtkGlyph3D> importantGlyph;
 
-  interestingPoints->InsertNextPoint(3, 36, 18);
+  // interestingPoints->InsertNextPoint(3, 36, 18);
   importantPointsData->SetPoints(interestingPoints);
 
 
