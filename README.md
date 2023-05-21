@@ -32,7 +32,6 @@ python ./python_scripts/run_clustering.py
 
 # TODO
 * Highlight AGNs and Star forming particles [VTK]
-* temperature in log [CPP]
 * animation in vtk [CPP]
 * particle tracer (center of galaxies)?
 * SPH (or alternative)
@@ -46,6 +45,8 @@ python ./python_scripts/run_clustering.py
 * 9th bit is only for dark-matter, this makes no sense
  
 # DONE
+* temperature in log [CPP]
+   * does not look that interesting in paraview
 * visualize phi (graphitational potential)
    * shows where the center of mass of the universe is
  * create filter which takes data from UI and filters particles based on their type [CPP]
