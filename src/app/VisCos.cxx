@@ -544,3 +544,11 @@ void VisCos::Run() {
   printf("Visualizing visuals\n");
   this->renderWindowInteractor->Start();
 }
+
+float VisCos::GetMovementAlpha() {
+  return this->movementAlpha;
+}
+
+void VisCos::SetMovementAlpha(float movementAlpha) {
+  this->movementAlpha = movementAlpha;
+}

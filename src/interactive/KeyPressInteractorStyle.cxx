@@ -26,11 +26,11 @@ void KeyPressInteractorStyle::OnKeyPress() {
     double newFpt[3];
 
     vtkMath::Subtract(fpt, pt, vec); // vec <- fpt - pt
-
     vtkMath::Normalize(vec);
-    vec[0] *= 3;
-    vec[1] *= 3;
-    vec[2] *= 3;
+    // Forward should be a little bit faster than other movements
+    vec[0] *= 2.3 * this->app->GetMovementAlpha();
+    vec[1] *= 2.3 * this->app->GetMovementAlpha();
+    vec[2] *= 2.3 * this->app->GetMovementAlpha();
     // vtkMath::Cross(vec, up, vec);
     vtkMath::Add(pt, vec, newPt);
     vtkMath::Add(fpt, vec, newFpt);
@@ -57,6 +57,9 @@ void KeyPressInteractorStyle::OnKeyPress() {
     vtkMath::Subtract(pt, fpt, vec); // vec <- fpt - pt
 
     vtkMath::Normalize(vec);
+    vec[0] *= 1 * this->app->GetMovementAlpha();
+    vec[1] *= 1 * this->app->GetMovementAlpha();
+    vec[2] *= 1 * this->app->GetMovementAlpha();
     vtkMath::Add(pt, vec, newPt);
     vtkMath::Add(fpt, vec, newFpt);
 
@@ -83,9 +86,9 @@ void KeyPressInteractorStyle::OnKeyPress() {
     vtkMath::Subtract(fpt, pt, vec); // vec <- fpt - pt
 
     vtkMath::Normalize(vec);
-    vec[0] *= -1;
-    vec[1] *= -1;
-    vec[2] *= -1;
+    vec[0] *= -1 * this->app->GetMovementAlpha();
+    vec[1] *= -1 * this->app->GetMovementAlpha();
+    vec[2] *= -1 * this->app->GetMovementAlpha();
     vtkMath::Cross(vec, up, vec);
     vtkMath::Add(pt, vec, newPt);
     vtkMath::Add(fpt, vec, newFpt);
@@ -113,9 +116,9 @@ void KeyPressInteractorStyle::OnKeyPress() {
     vtkMath::Subtract(fpt, pt, vec); // vec <- fpt - pt
 
     vtkMath::Normalize(vec);
-    vec[0] *= 1;
-    vec[1] *= 1;
-    vec[2] *= 1;
+    vec[0] *= this->app->GetMovementAlpha();
+    vec[1] *= this->app->GetMovementAlpha();
+    vec[2] *= this->app->GetMovementAlpha();
     vtkMath::Cross(vec, up, vec);
     vtkMath::Add(pt, vec, newPt);
     vtkMath::Add(fpt, vec, newFpt);
@@ -235,6 +238,17 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
+  if (key == "z") {
+    this->app->SetMovementAlpha(this->app->GetMovementAlpha() * 0.8);
+    printf("Set movement speed to %f\n", this->app->GetMovementAlpha());
+    return;
+  }
+  if (key == "x") {
+    this->app->SetMovementAlpha(this->app->GetMovementAlpha() * 1.2);
+    printf("Set movement speed to %f\n", this->app->GetMovementAlpha());
+    return;
+  }
+
   // Print keyboard shortcuts with "h" (help)
   if (key == "h") {
     printf("Keyboard keybindings:\n");
@@ -251,6 +265,8 @@ void KeyPressInteractorStyle::OnKeyPress() {
     printf("  * '4' to toggle baryon star forming\n");
     printf("  * '2' to toggle AGN particles\n");
     printf("  * 'n' to print the current position\n");
+    printf("  * 'x' to decrease the movement speed\n");
+    printf("  * 'n' to INCREASE the movement speed\n");
     printf("  * Quit with 'q'\n");
   }
 

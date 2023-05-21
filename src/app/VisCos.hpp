@@ -46,6 +46,9 @@ private:
   // Number of steps to take when the slider was moved
   int steps = 100;
 
+  // Multiplicator for movement and angle operations
+  float movementAlpha = 1.0;
+
   std::string background_color;
   std::string data_folder_path;
   std::string cluster_path;
@@ -140,6 +143,9 @@ public:
   void toggleDarkAGN();
 
   void UpdateVisbleParticlesText();
+
+  float GetMovementAlpha();
+  void SetMovementAlpha(float movementAlpha);
 
   void Run();
 };
