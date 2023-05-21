@@ -265,8 +265,8 @@ void KeyPressInteractorStyle::OnKeyPress() {
     printf("  * '4' to toggle baryon star forming\n");
     printf("  * '2' to toggle AGN particles\n");
     printf("  * 'n' to print the current position\n");
-    printf("  * 'x' to decrease the movement speed\n");
-    printf("  * 'n' to INCREASE the movement speed\n");
+    printf("  * 'z' to decrease the movement speed\n");
+    printf("  * 'x' to INCREASE the movement speed\n");
     printf("  * Quit with 'q'\n");
   }
 
