@@ -26,6 +26,7 @@
 #include "../helper/helper.hxx"
 #include "../interactive/KeyPressInteractorStyle.hxx"
 #include "../interactive/TimeSliderCallback.hxx"
+#include "../interactive/ResizeWindowCallback.hxx"
 #include "../processing/AssignClusterFilter.hxx"
 #include "../processing/ParticleTypeFilter.hxx"
 #include "../processing/CalculateTemperatureFilter.hxx"
@@ -94,7 +95,15 @@ private:
   AssignClusterParams clusterFilterParams;
   particleTypeFilterParams particleFilterParams;
   vtkNew<TimeSliderCallback> timeSliderCallback;
-  vtkTextActor* visibleParticlesText;
+  vtkNew<ResizeWindowCallback> resizeCallback;
+
+  vtkTextActor* textVisibleParticles;
+  vtkTextActor* textBaryon;
+  vtkTextActor* textDarkMatter;
+  vtkTextActor* textBaryonWind;
+  vtkTextActor* textBaryonStar;
+  vtkTextActor* textBaryonStarForming;
+  vtkTextActor* textAGN;
 
 
 public:
@@ -146,6 +155,8 @@ public:
 
   float GetMovementAlpha();
   void SetMovementAlpha(float movementAlpha);
+
+  void UpdateGUIElements();
 
   void Run();
 };

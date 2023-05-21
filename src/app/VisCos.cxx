@@ -35,13 +35,18 @@ VisCos::VisCos(int initial_active_timestep, std::string data_folder_path,
   this->active_timestep = initial_active_timestep;
   this->data_folder_path = data_folder_path;
   this->cluster_path = cluster_path;
+
   this->timeSliderCallback->app = this;
+  this->resizeCallback->app = this;
+
   this->keyboardInteractorStyle->app = this;
   this->keyboardInteractorStyle->renderWindow = this->renderWindow;
   this->keyboardInteractorStyle->dataMapper = this->dataMapper;
 
   this->singlePointSource->SetCenter(0, 0, 0);
   this->singlePointSource->SetNumberOfPoints(1);
+
+  this->colors->SetColor("DisabledParticleTypeColor", "#A9A9A9");
 }
 
 void VisCos::Load() {
@@ -456,56 +461,69 @@ void VisCos::toggleDarkAGN() {
 }
 
 void VisCos::UpdateVisbleParticlesText() {
-  if (this->particleFilterParams.current_filter == static_cast<uint16_t>(Selector::ALL)) {
-    this->visibleParticlesText->SetInput("Visible particles: ALL");
-    this->visibleParticlesText->Modified();
-    return;
-  }
-  if (this->particleFilterParams.current_filter == static_cast<uint16_t>(Selector::NONE)) {
-    this->visibleParticlesText->SetInput("Visible particles: NONE");
-    this->visibleParticlesText->Modified();
-    return;
-  }
-
-  std::string visParticles("Visible particles: ");
-
   // 8
   if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON)) {
-    visParticles += "Baryons, ";
+    this->textBaryon->GetTextProperty()->SetColor(colors->GetColor3d("White").GetData());
+  } else {
+    this->textBaryon->GetTextProperty()->SetColor(colors->GetColor3d("DisabledParticleTypeColor").GetData());
   }
+  this->textBaryon->Modified();
 
   // 7
   if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::DARK_MATTER)) {
-    visParticles += "Dark matter, ";
+    this->textDarkMatter->GetTextProperty()->SetColor(colors->GetColor3d("White").GetData());
+  } else {
+    this->textDarkMatter->GetTextProperty()->SetColor(colors->GetColor3d("DisabledParticleTypeColor").GetData());
   }
+  this->textDarkMatter->Modified();
 
   // 6
   if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_WIND)) {
-    visParticles += "Wind, ";
+    this->textBaryonWind->GetTextProperty()->SetColor(colors->GetColor3d("White").GetData());
+  } else {
+    this->textBaryonWind->GetTextProperty()->SetColor(colors->GetColor3d("DisabledParticleTypeColor").GetData());
   }
+  this->textBaryonWind->Modified();
 
   // 5
   if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_STAR)) {
-    visParticles += "Stars, ";
+    this->textBaryonStar->GetTextProperty()->SetColor(colors->GetColor3d("White").GetData());
+  } else {
+    this->textBaryonStar->GetTextProperty()->SetColor(colors->GetColor3d("DisabledParticleTypeColor").GetData());
   }
+  this->textBaryonStar->Modified();
 
   // 4
   if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_STAR_FORMING)) {
-    visParticles += "Star forming, ";
+    this->textBaryonStarForming->GetTextProperty()->SetColor(colors->GetColor3d("White").GetData());
+  } else {
+    this->textBaryonStarForming->GetTextProperty()->SetColor(colors->GetColor3d("DisabledParticleTypeColor").GetData());
   }
+  this->textBaryonStarForming->Modified();
 
   // 2
   if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::DARK_AGN)) {
-    visParticles += "AGN, ";
+    this->textAGN->GetTextProperty()->SetColor(colors->GetColor3d("White").GetData());
+  } else {
+    this->textAGN->GetTextProperty()->SetColor(colors->GetColor3d("DisabledParticleTypeColor").GetData());
   }
-
-  // Remove the last two characters
-  visParticles.pop_back();
-  visParticles.pop_back();
+  this->textAGN->Modified();
 
   // Update visible text
-  this->visibleParticlesText->SetInput(visParticles.c_str());
-  this->visibleParticlesText->Modified();
+  this->renderer->Render();
+}
+
+void VisCos::UpdateGUIElements() {
+
+  double* d = this->textVisibleParticles->GetPosition();
+  int* size = this->renderWindow->GetActualSize();
+
+  this->textBaryon->SetPosition(d[0] * size[0], d[1] * size[1] - 24);
+  this->textDarkMatter->SetPosition(d[0] * size[0], d[1] * size[1] - 2*24);
+  this->textBaryonWind->SetPosition(d[0] * size[0], d[1] * size[1] - 3*24);
+  this->textBaryonStar->SetPosition(d[0] * size[0], d[1] * size[1] - 4*24);
+  this->textBaryonStarForming->SetPosition(d[0] * size[0], d[1] * size[1] - 5*24);
+  this->textAGN->SetPosition(d[0] * size[0], d[1] * size[1] - 6*24);
 }
 
 void VisCos::Run() {
@@ -525,19 +543,80 @@ void VisCos::Run() {
   timeSliderWidget->On();
 
   // Show which particles are visible
-  vtkNew<vtkTextActor> visibleParticlesText;
-  this->visibleParticlesText = visibleParticlesText;
+  vtkNew<vtkTextActor> textVisibleParticles;
+  this->textVisibleParticles = textVisibleParticles;
 
-  this->visibleParticlesText->SetInput("Visible particles: ");
-  this->visibleParticlesText->GetPositionCoordinate()->SetCoordinateSystemToNormalizedDisplay();
-  this->visibleParticlesText->SetPosition(0.02, 0.95);
-  this->visibleParticlesText->GetTextProperty()->SetFontSize(24);
-  this->visibleParticlesText->GetTextProperty()->SetColor(colors->GetColor3d("White").GetData());
-  renderer->AddActor2D(visibleParticlesText);
+  this->textVisibleParticles->SetInput("Visible particles: ");
+  this->textVisibleParticles->GetPositionCoordinate()->SetCoordinateSystemToNormalizedDisplay();
+  this->textVisibleParticles->SetPosition(0.02, 0.95);
+
+  double* textVisibleParticlesPosition = this->textVisibleParticles->GetPosition();
+  int* size = this->renderWindow->GetActualSize();
+
+  this->textVisibleParticles->GetTextProperty()->SetFontSize(24);
+
+  vtkNew<vtkTextActor> textBaryon;
+  this->textBaryon = textBaryon;
+
+  this->textBaryon->SetInput("[8] Baryons");
+  this->textBaryon->GetPositionCoordinate()->SetCoordinateSystemToDisplay();
+  this->textBaryon->SetPosition(textVisibleParticlesPosition[0] * size[0], textVisibleParticlesPosition[1] * size[1] - 24);
+  this->textBaryon->GetTextProperty()->SetFontSize(24);
+
+  vtkNew<vtkTextActor> textDarkMatter;
+  this->textDarkMatter = textDarkMatter;
+
+  this->textDarkMatter->SetInput("[7] Dark Matter");
+  this->textDarkMatter->GetPositionCoordinate()->SetCoordinateSystemToDisplay();
+  this->textDarkMatter->SetPosition(textVisibleParticlesPosition[0] * size[0], textVisibleParticlesPosition[1] * size[1] - 24 * 2);
+  this->textDarkMatter->GetTextProperty()->SetFontSize(24);
+
+  vtkNew<vtkTextActor> textBaryonWind;
+  this->textBaryonWind = textBaryonWind;
+
+  this->textBaryonWind->SetInput("[6] Wind");
+  this->textBaryonWind->GetPositionCoordinate()->SetCoordinateSystemToDisplay();
+  this->textBaryonWind->SetPosition(textVisibleParticlesPosition[0] * size[0], textVisibleParticlesPosition[1] * size[1] - 24 * 3);
+  this->textBaryonWind->GetTextProperty()->SetFontSize(24);
+
+  vtkNew<vtkTextActor> textBaryonStar;
+  this->textBaryonStar = textBaryonStar;
+
+  this->textBaryonStar->SetInput("[5] Stars");
+  this->textBaryonStar->GetPositionCoordinate()->SetCoordinateSystemToDisplay();
+  this->textBaryonStar->SetPosition(textVisibleParticlesPosition[0] * size[0], textVisibleParticlesPosition[1] * size[1] - 24 * 4);
+  this->textBaryonStar->GetTextProperty()->SetFontSize(24);
+
+  vtkNew<vtkTextActor> textBaryonStarForming;
+  this->textBaryonStarForming = textBaryonStarForming;
+
+  this->textBaryonStarForming->SetInput("[4] Star Forming");
+  this->textBaryonStarForming->GetPositionCoordinate()->SetCoordinateSystemToDisplay();
+  this->textBaryonStarForming->SetPosition(textVisibleParticlesPosition[0] * size[0], textVisibleParticlesPosition[1] * size[1] - 24 * 5);
+  this->textBaryonStarForming->GetTextProperty()->SetFontSize(24);
+  this->textBaryonStarForming->GetTextProperty()->SetColor(colors->GetColor3d("White").GetData());
+
+  vtkNew<vtkTextActor> textAGN;
+  this->textAGN = textAGN;
+
+  this->textAGN->SetInput("[2] AGN");
+  this->textAGN->GetPositionCoordinate()->SetCoordinateSystemToDisplay();
+  this->textAGN->SetPosition(textVisibleParticlesPosition[0] * size[0], textVisibleParticlesPosition[1] * size[1] - 24 * 6);
+  this->textAGN->GetTextProperty()->SetFontSize(24);
+
+  renderer->AddActor2D(this->textVisibleParticles);
+  renderer->AddActor2D(this->textBaryon);
+  renderer->AddActor2D(this->textAGN);
+  renderer->AddActor2D(this->textBaryonStar);
+  renderer->AddActor2D(this->textBaryonStarForming);
+  renderer->AddActor2D(this->textBaryonWind);
+  renderer->AddActor2D(this->textDarkMatter);
 
   // Register callback
   timeSliderWidget->AddObserver(vtkCommand::InteractionEvent,
                                 timeSliderCallback);
+
+  renderWindow->AddObserver(vtkCommand::WindowResizeEvent, resizeCallback);
 
   this->UpdateVisbleParticlesText();
 

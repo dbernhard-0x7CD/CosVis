@@ -30,6 +30,7 @@ add_executable(${PROJECT_NAME}
   ./src/main.cxx
   ./src/helper/helper.cxx
   ./src/interactive/TimeSliderCallback.cxx
+  ./src/interactive/ResizeWindowCallback.cxx
   ./src/interactive/KeyPressInteractorStyle.cxx
   ./src/processing/CalculateTemperatureFilter.cxx
   ./src/processing/ParticleTypeFilter.cxx
