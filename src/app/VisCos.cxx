@@ -139,11 +139,11 @@ void VisCos::ShowClusters() {
   this->dataMapper->SetLookupTable(this->clusterLUT);
   this->dataMapper->InterpolateScalarsBeforeMappingOff();
 
-  this->manyParticlesActor->GetProperty()->SetLighting(1.0);
-  this->manyParticlesActor->GetProperty()->RenderPointsAsSpheresOn();
-  this->manyParticlesActor->GetProperty()->SetAmbient(0.2);
-  this->manyParticlesActor->GetProperty()->SetPointSize(1.0);
-  this->manyParticlesActor->GetProperty()->SetOpacity(0.5);
+  // this->manyParticlesActor->GetProperty()->SetLighting(1.0);
+  // this->manyParticlesActor->GetProperty()->RenderPointsAsSpheresOn();
+  this->manyParticlesActor->GetProperty()->SetAmbient(2.3);
+  this->manyParticlesActor->GetProperty()->SetPointSize(2.0);
+  this->manyParticlesActor->GetProperty()->SetOpacity(0.3);
   this->manyParticlesActor->Modified();
 
   this->camera->Modified();
@@ -163,10 +163,10 @@ void VisCos::ShowTemperature() {
   this->dataMapper->Modified();
   this->dataMapper->Update();
 
-  // this->manyParticlesActor->GetProperty()->SetLighting(0.0);
+  this->manyParticlesActor->GetProperty()->SetLighting(5.0);
   this->manyParticlesActor->GetProperty()->SetAmbient(2.3);
-  this->manyParticlesActor->GetProperty()->SetPointSize(0.3);
-  this->manyParticlesActor->GetProperty()->SetOpacity(0.7);
+  this->manyParticlesActor->GetProperty()->SetPointSize(2.0);
+  this->manyParticlesActor->GetProperty()->SetOpacity(0.3);
   this->manyParticlesActor->Modified();
 
   this->scalarBarWidget->On();
