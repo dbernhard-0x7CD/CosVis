@@ -134,7 +134,6 @@ void VisCos::ShowClusters() {
   this->dataMapper->ScalarVisibilityOn();
   this->dataMapper->SelectColorArray("Cluster");
 
-  // this->temperatureFilterParams.updateScalarRange = false;
   this->dataMapper->SetScalarRange(0, 26);
   this->dataMapper->SetLookupTable(this->clusterLUT);
   this->dataMapper->InterpolateScalarsBeforeMappingOff();
@@ -154,9 +153,6 @@ void VisCos::ShowClusters() {
 }
 
 void VisCos::ShowTemperature() {
-  // this->temperatureFilterParams.updateScalarRange = true;
-  this->scalarBarActor->Modified();
-
   this->dataMapper->SelectColorArray("Temperature");
   this->dataMapper->InterpolateScalarsBeforeMappingOn();
   this->dataMapper->SetLookupTable(this->tempLUT);
