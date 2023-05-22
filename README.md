@@ -31,12 +31,10 @@ python ./python_scripts/run_clustering.py
 ```
 
 # TODO
-* Highlight AGNs and Star forming particles [VTK]
+* SPH (or alternative)
+* Highlight AGNs and [VTK]
 * animation in vtk [CPP]
 * particle tracer (center of galaxies)?
-* SPH (or alternative)
- * create histogram for the types of particles [paraview]
-    * visualize this histogram over time
  * [maybe drop] create filter which scales the points to their actual location (via cosmological scale factor 'a') [CPP]
     * fix camera position and zoom away as time progresses (scale with a) [CPP]
     * needs background image
@@ -45,6 +43,7 @@ python ./python_scripts/run_clustering.py
 * 9th bit is only for dark-matter, this makes no sense
  
 # DONE
+* highlight Star forming particles 
 * temperature in log [CPP]
    * does not look that interesting in paraview
 * visualize phi (graphitational potential)
