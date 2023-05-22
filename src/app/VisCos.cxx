@@ -141,7 +141,7 @@ void VisCos::ShowClusters() {
   this->dataMapper->SetLookupTable(this->clusterLUT);
   this->dataMapper->InterpolateScalarsBeforeMappingOff();
 
-  // this->manyParticlesActor->GetProperty()->SetLighting(1.0);
+  this->scalarBarActor->SetTitle("Clusters");
   // this->manyParticlesActor->GetProperty()->RenderPointsAsSpheresOn();
   this->manyParticlesActor->GetProperty()->SetAmbient(2.3);
   this->manyParticlesActor->GetProperty()->SetPointSize(2.0);
@@ -168,6 +168,7 @@ void VisCos::ShowTemperature() {
   this->manyParticlesActor->GetProperty()->SetOpacity(0.3);
   this->manyParticlesActor->Modified();
 
+  this->scalarBarActor->SetTitle("Temperature");
   this->scalarBarActor->SetLookupTable(tempLUT);
   this->scalarBarActor->Modified();
   this->scalarBarWidget->Modified();
@@ -192,6 +193,7 @@ void VisCos::ShowPhi() {
   this->manyParticlesActor->GetProperty()->SetPointSize(1.5);
   this->manyParticlesActor->GetProperty()->SetOpacity(0.07);
 
+  this->scalarBarActor->SetTitle("Phi (gravitational potential)");
   this->scalarBarActor->SetLookupTable(this->phiLUT);
   this->scalarBarActor->Modified();
   this->scalarBarWidget->Modified();
