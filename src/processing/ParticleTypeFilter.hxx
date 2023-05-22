@@ -11,6 +11,9 @@ struct particleTypeFilterParams {
   vtkPolyData *data;
   vtkProgrammableFilter *filter;
   uint16_t current_filter;
+  vtkPolyData *agnParticles;
+  vtkPolyData *baryonParticles;
+  vtkPolyData *starParticles;
 };
 
 void FilterType(void *arguments);

@@ -15,6 +15,7 @@
 #include <vtkProgrammableFilter.h>
 #include <vtkProperty.h>
 #include <vtkRenderWindow.h>
+#include <vtkSphereSource.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
 #include <vtkScalarBarActor.h>
@@ -61,12 +62,18 @@ private:
   vtkXMLPolyDataReader *activeReader;
   vtkNew<vtkNamedColors> colors;
   vtkNew<vtkPointSource> singlePointSource;
+  vtkNew<vtkSphereSource> sphereSource;
 
   // The mapper is responsible for pushing the geometry into the graphics
   // library. It may also do color mapping, if scalars or other attributes are
   // defined.
   vtkNew<vtkPolyDataMapper> dataMapper;
-  vtkNew<vtkPolyDataMapper> interestingDataMapper;
+  vtkNew<vtkPolyDataMapper> starDataMapper;
+
+  vtkNew<vtkPolyData> importantPointsData;
+  vtkNew<vtkPolyData> baryonData;
+  vtkNew<vtkPolyData> starData;
+
   vtkNew<vtkLookupTable> tempLUT = GetTemperatureLUT();
   vtkNew<vtkLookupTable> clusterLUT = GetClusterLUT();
   vtkNew<vtkLookupTable> phiLUT = GetPhiLUT();
@@ -75,7 +82,7 @@ private:
 
   // Actors
   vtkNew<vtkActor> manyParticlesActor;
-  vtkNew<vtkActor> interestingParticlesActor;
+  vtkNew<vtkActor> starParticlesActor;
 
   // Visual stuff
   vtkNew<vtkRenderWindow> renderWindow;
@@ -97,6 +104,7 @@ private:
 
   // Various
   vtkNew<vtkGlyph3D> glyph3D;
+  vtkNew<vtkGlyph3D> starGlyph3D;
   vtkNew<vtkCamera> camera;
   vtkNew<KeyPressInteractorStyle> keyboardInteractorStyle;
 

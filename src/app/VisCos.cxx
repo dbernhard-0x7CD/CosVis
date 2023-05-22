@@ -46,6 +46,9 @@ VisCos::VisCos(int initial_active_timestep, std::string data_folder_path,
   this->singlePointSource->SetCenter(0, 0, 0);
   this->singlePointSource->SetNumberOfPoints(1);
 
+  this->sphereSource->SetRadius(0.2);
+  this->sphereSource->SetCenter(0,0,0);
+
   this->colors->SetColor("DisabledParticleTypeColor", "#A9A9A9");
 }
 
@@ -249,41 +252,36 @@ void VisCos::SetupPipeline() {
   particleFilterParams.data = static_cast<vtkPolyData *>(clusterFilter->GetOutput());
   particleFilterParams.filter = particleTypeFilter;
   particleFilterParams.current_filter = static_cast<uint16_t>(Selector::ALL);
+  particleFilterParams.agnParticles = importantPointsData;
+  particleFilterParams.baryonParticles = baryonData;
+  particleFilterParams.starParticles = starData;
 
   particleTypeFilter->SetExecuteMethod(FilterType, &particleFilterParams);
   particleTypeFilter->Update();
 
-  // Glyph
+  // Glyph for many particles
   glyph3D->SetSourceConnection(singlePointSource->GetOutputPort());
   glyph3D->SetInputConnection(particleTypeFilter->GetOutputPort());
   glyph3D->Update();
 
+  // Glyph for stars
+  starGlyph3D->SetSourceConnection(sphereSource->GetOutputPort());
+  starGlyph3D->SetInputData(starData);
+  starGlyph3D->Update();
+
+  // Data Mapper for many particles
   dataMapper->SetInputConnection(glyph3D->GetOutputPort());
   dataMapper->SetScalarModeToUsePointFieldData();
 
+  // Data Mapper for stars
+  starDataMapper->SetInputConnection(starGlyph3D->GetOutputPort());
+
   manyParticlesActor->SetMapper(dataMapper);
+  starParticlesActor->SetMapper(starDataMapper);
+  starParticlesActor->GetProperty()->SetColor(255, 255, 0);
 
   // Set up data mapper for interesting particles
-  vtkNew<vtkPoints> interestingPoints;
-  vtkNew<vtkPolyData> importantPointsData;
-  vtkNew<vtkGlyph3D> importantGlyph;
-
-  // interestingPoints->InsertNextPoint(3, 36, 18);
-  importantPointsData->SetPoints(interestingPoints);
-
-
-  importantGlyph->SetSourceConnection(singlePointSource->GetOutputPort());
-  importantGlyph->SetInputData(importantPointsData);
-  importantGlyph->Update();
-
-  interestingDataMapper->SetInputConnection(importantGlyph->GetOutputPort());
-  interestingDataMapper->SetScalarModeToUsePointFieldData();
-
-  interestingParticlesActor->GetProperty()->RenderPointsAsSpheresOn();
-  interestingParticlesActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
-  interestingParticlesActor->GetProperty()->SetPointSize(15.0);
   
-  interestingParticlesActor->SetMapper(interestingDataMapper);
 
   // Now setup some GUI/Interaction elements
   // create the scalarBarWidget
@@ -303,7 +301,7 @@ void VisCos::SetupPipeline() {
   renderWindowInteractor->Initialize();
 
   renderer->AddActor(manyParticlesActor);
-  renderer->AddActor(interestingParticlesActor);
+  renderer->AddActor(starParticlesActor);
 
   // Scalar bar for the particle colors when showing the temperature
   scalarBarActor->SetOrientationToVertical();
