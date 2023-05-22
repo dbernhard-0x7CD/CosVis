@@ -80,7 +80,7 @@ void FilterType(void *arguments) {
         if (this_mask & static_cast<uint16_t>(Selector::DARK_AGN)) {
           agnPoints->InsertNextPoint(input->data->GetPoints()->GetPoint(i));
         }
-        if (this_mask & static_cast<uint16_t>(Selector::BARYON_STAR)) {
+        if ((this_mask & mask_filter) == static_cast<uint16_t>(Selector::BARYON_STAR)) {
           starPoints->InsertNextPoint(input->data->GetPoints()->GetPoint(i));
         }
       } else {
