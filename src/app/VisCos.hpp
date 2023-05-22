@@ -92,9 +92,6 @@ private:
   vtkNew<vtkGlyph3D> glyph3D;
   vtkNew<vtkCamera> camera;
   vtkNew<KeyPressInteractorStyle> keyboardInteractorStyle;
-  vtkNew<vtkSPHQuinticKernel> kernel;
-  vtkNew<vtkStructuredPoints> source;
-  vtkNew<vtkSPHInterpolator> interpolator;
 
   TempFilterParams temperatureFilterParams;
   AssignClusterParams clusterFilterParams;
