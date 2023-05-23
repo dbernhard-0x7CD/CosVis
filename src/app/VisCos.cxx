@@ -46,8 +46,8 @@ VisCos::VisCos(int initial_active_timestep, std::string data_folder_path,
   this->singlePointSource->SetCenter(0, 0, 0);
   this->singlePointSource->SetNumberOfPoints(1);
 
-  this->sphereSource->SetRadius(0.2);
-  this->sphereSource->SetCenter(0,0,0);
+  this->sphereSource->SetRadius(0.1);
+  this->sphereSource->SetCenter(0,0,0.5);
 
   this->colors->SetColor("DisabledParticleTypeColor", "#A9A9A9");
 }
