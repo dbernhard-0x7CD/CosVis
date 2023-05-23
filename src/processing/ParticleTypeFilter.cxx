@@ -76,15 +76,16 @@ void FilterType(void *arguments) {
       uint16_t this_mask = static_cast<uint16_t>(mask->GetTuple1(i));
 
       if (((this_mask & mask_filter) || ((mask_filter & (static_cast<uint16_t>(Selector::DARK_MATTER))) && ((this_mask & 0b10) == 0)) && static_cast<uint16_t>(Selector::DARK_AGN) != mask_filter)) {
-        num++;
         if (this_mask & static_cast<uint16_t>(Selector::DARK_AGN)) {
+          num++;
           agnPoints->InsertNextPoint(input->data->GetPoints()->GetPoint(i));
-        }
-        if ((this_mask & mask_filter) == static_cast<uint16_t>(Selector::BARYON_STAR)) {
-          starPoints->InsertNextPoint(input->data->GetPoints()->GetPoint(i));
         }
       } else {
         hiddenPoints->SetValue(i, vtkDataSetAttributes::HIDDENPOINT);
+      }
+
+      if ((this_mask & static_cast<uint16_t>(Selector::BARYON_STAR)) && (mask_filter & static_cast<uint16_t>(Selector::BARYON_STAR))) {
+        starPoints->InsertNextPoint(input->data->GetPoints()->GetPoint(i));
       }
 
       if (this_mask & 0b10) {
