@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <stdio.h>
 #include <utility>
+// IWYU pragma: no_include <bits/chrono.h>
 
 #include <vtkCamera.h>
 #include <vtkColor.h>

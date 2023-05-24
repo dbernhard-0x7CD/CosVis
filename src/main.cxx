@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+// IWYU pragma: no_include <bits/chrono.h>
 
 #include "app/VisCos.hpp"
 
