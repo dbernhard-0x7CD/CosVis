@@ -13,7 +13,6 @@
 void KeyPressInteractorStyle::OnChar() {
   vtkRenderWindowInteractor *rwi = this->Interactor;
 
-  printf("onchar: %c\n", rwi->GetKeyCode());
   if (rwi->GetKeyCode() == 'w') {
     return; // This disables wireframe
   }
