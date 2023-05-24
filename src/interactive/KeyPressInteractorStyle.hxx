@@ -13,13 +13,14 @@ class vtkRenderWindow;
 class KeyPressInteractorStyle : public vtkInteractorStyleTrackballCamera {
 private:
 public:
+  vtkTypeMacro(KeyPressInteractorStyle, vtkInteractorStyleTrackballCamera);
   static KeyPressInteractorStyle *New();
 
   VisCos *app;
   vtkRenderWindow *renderWindow;
   vtkPolyDataMapper* dataMapper;
 
-  vtkTypeMacro(KeyPressInteractorStyle, vtkInteractorStyleTrackballCamera);
   vtkCamera *camera;
   virtual void OnKeyPress() override;
+  virtual void OnChar() override;
 };

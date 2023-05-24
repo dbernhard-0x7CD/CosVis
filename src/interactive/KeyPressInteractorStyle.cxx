@@ -10,6 +10,23 @@
 #include "../interactive/KeyPressInteractorStyle.hxx"
 #include "../app/VisCos.hpp"
 
+void KeyPressInteractorStyle::OnChar() {
+  vtkRenderWindowInteractor *rwi = this->Interactor;
+
+  printf("onchar: %c\n", rwi->GetKeyCode());
+  if (rwi->GetKeyCode() == 'w') {
+    return; // This disables wireframe
+  }
+  if (rwi->GetKeyCode() == 's') {
+    return;
+  }
+  if (rwi->GetKeyCode() == 'p') {
+    return; // Disable boundary box (or sort some sort of box)
+  }
+
+  // Forward events
+  vtkInteractorStyleTrackballCamera::OnChar();
+}
 void KeyPressInteractorStyle::OnKeyPress() {
   vtkRenderWindowInteractor *rwi = this->Interactor;
   std::string key = rwi->GetKeySym();
