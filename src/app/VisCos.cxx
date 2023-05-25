@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <stdio.h>
 #include <utility>
+#include <stdint.h>
+#include <algorithm>
 // IWYU pragma: no_include <bits/chrono.h>
 
 #include <vtkCamera.h>
@@ -10,24 +12,38 @@
 #include <vtkCommand.h>
 #include <vtkCoordinate.h>
 #include <vtkGlyph3D.h>
+#include <vtkPiecewiseFunction.h>
+#include <vtkSmoothPolyDataFilter.h>
+#include <vtkStructuredGrid.h>
 #include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkProgrammableFilter.h>
 #include <vtkProperty.h>
+#include <vtkImageData.h>
+#include <vtkSPHInterpolator.h>
+#include <vtkSPHQuinticKernel.h>
 #include <vtkSliderRepresentation.h>
 #include <vtkSliderRepresentation2D.h>
+#include <vtkSmartVolumeMapper.h>
 #include <vtkTextActor.h>
 #include <vtkTextProperty.h>
 #include <vtkType.h>
 #include <vtkTypeInt64Array.h>
+#include <vtkVolumeProperty.h>
+#include <vtkVolumeCollection.h>
 #include <vtkXMLPolyDataReader.h>
 
 #include "../data/Loader.h"
 #include "../interactive/KeyPressInteractorStyle.hxx"
 #include "../interactive/TimeSliderCallback.hxx"
 #include "../processing/AssignClusterFilter.hxx"
-#include "../processing/ParticleTypeFilter.hxx"
 #include "../processing/CalculateTemperatureFilter.hxx"
+#include "../processing/ParticleTypeFilter.hxx"
+#include "../processing/PolyDataToImageDataAlgorithm.hxx"
+#include "../processing/StarFilter.hxx"
+#include "../processing/BaryonFilter.hxx"
+#include "../helper/helper.hxx"
+#include "../interactive/ResizeWindowCallback.hxx"
 
 namespace fs = std::filesystem;
 
@@ -43,14 +59,29 @@ VisCos::VisCos(int initial_active_timestep, std::string data_folder_path,
   this->keyboardInteractorStyle->app = this;
   this->keyboardInteractorStyle->renderWindow = this->renderWindow;
   this->keyboardInteractorStyle->dataMapper = this->dataMapper;
+  this->keyboardInteractorStyle->SetCurrentRenderer(this->renderer);
 
-  this->singlePointSource->SetCenter(0, 0, 0);
+  // Makes the point appear at their exact location
+  this->singlePointSource->SetRadius(0.0);
   this->singlePointSource->SetNumberOfPoints(1);
 
-  this->sphereSource->SetRadius(0.1);
-  this->sphereSource->SetCenter(0,0,0.5);
+  this->sphereSource->SetRadius(0.01);
 
   this->colors->SetColor("DisabledParticleTypeColor", "#A9A9A9");
+
+  opacityFunction->AddPoint(20, 0.0);
+  opacityFunction->AddPoint(700, .4);
+  opacityFunction->AddPoint(800, 0.8);
+  opacityFunction->AddPoint(2000, 0.999);
+  opacityFunction->AddPoint(184026, 1.0);
+  opacityFunction->ClampingOn();
+
+  double spacing[3];
+  spacing[0] = sphVolumeLengths[0] / dimensions[0];
+  spacing[1] = sphVolumeLengths[1] / dimensions[1];
+  spacing[2] = sphVolumeLengths[2] / dimensions[2];
+
+  source = GetSPHStructuredGrid(dimensions, spacing, sphOrigin);
 }
 
 void VisCos::Load() {
@@ -163,7 +194,6 @@ void VisCos::ShowTemperature() {
   this->dataMapper->SetScalarRange(0, 7000);
   this->dataMapper->Modified();
 
-  this->manyParticlesActor->GetProperty()->SetLighting(5.0);
   this->manyParticlesActor->GetProperty()->SetAmbient(2.3);
   this->manyParticlesActor->GetProperty()->SetPointSize(2.0);
   this->manyParticlesActor->GetProperty()->SetOpacity(0.3);
@@ -255,12 +285,25 @@ void VisCos::SetupPipeline() {
   particleFilterParams.data = static_cast<vtkPolyData *>(clusterFilter->GetOutput());
   particleFilterParams.filter = particleTypeFilter;
   particleFilterParams.current_filter = static_cast<uint16_t>(Selector::ALL);
-  particleFilterParams.agnParticles = importantPointsData;
-  particleFilterParams.baryonParticles = baryonData;
-  particleFilterParams.starParticles = starData;
 
   particleTypeFilter->SetExecuteMethod(FilterType, &particleFilterParams);
   particleTypeFilter->Update();
+
+  // Filter for stars
+  starFilterParams.data = static_cast<vtkPolyData *>(clusterFilter->GetOutput());
+  starFilterParams.filter = starFilter;
+
+  starFilter->SetInputConnection(clusterFilter->GetOutputPort());
+  starFilter->SetExecuteMethod(StarType, &starFilterParams);
+  starFilter->Update();
+
+  // Filter for baryons
+  baryonFilterParams.data = static_cast<vtkPolyData *>(clusterFilter->GetOutput());
+  baryonFilterParams.filter = baryonFilter;
+
+  baryonFilter->SetInputConnection(clusterFilter->GetOutputPort());
+  baryonFilter->SetExecuteMethod(BaryonFilter, &baryonFilterParams);
+  baryonFilter->Update();
 
   // Glyph for many particles
   glyph3D->SetSourceConnection(singlePointSource->GetOutputPort());
@@ -269,8 +312,16 @@ void VisCos::SetupPipeline() {
 
   // Glyph for stars
   starGlyph3D->SetSourceConnection(sphereSource->GetOutputPort());
-  starGlyph3D->SetInputData(starData);
+  starGlyph3D->SetInputConnection(starFilter->GetOutputPort());
   starGlyph3D->Update();
+
+  // Glyph for marked stuff (dev mode)
+  markedData->SetPoints(markedPoints);
+  markedPoints->InsertNextPoint(19.75, 42.56, 36.71);
+
+  markedGlyph3D->SetSourceConnection(singlePointSource->GetOutputPort());
+  markedGlyph3D->SetInputData(markedData);
+  markedGlyph3D->Update();
 
   // Data Mapper for many particles
   dataMapper->SetInputConnection(glyph3D->GetOutputPort());
@@ -279,12 +330,93 @@ void VisCos::SetupPipeline() {
   // Data Mapper for stars
   starDataMapper->SetInputConnection(starGlyph3D->GetOutputPort());
 
+  // Data Mapper for marked particles
+  markedDataMapper->SetInputConnection(markedGlyph3D->GetOutputPort());
+  markedDataMapper->SetResolveCoincidentTopology(0);
+  markedParticlesActor->SetMapper(markedDataMapper);
+  markedParticlesActor->GetProperty()->SetPointSize(20.0);
+  markedParticlesActor->GetProperty()->SetColor(0, 255, 0); // green
+
+  double o[3];
+  manyParticlesActor->GetOrientation(o);
+  printf("manyParticlesActor Orientation: %lf %lf %lf\n", o[0], o[1], o[2]);
+  int cs = manyParticlesActor->GetCoordinateSystem();
+  printf("manyParticlesActor cs: %d\n", cs);
   manyParticlesActor->SetMapper(dataMapper);
+
+  // starParticlesActor->SetOrigin(0,0,0);
   starParticlesActor->SetMapper(starDataMapper);
-  starParticlesActor->GetProperty()->SetColor(255, 255, 0);
+  starParticlesActor->GetProperty()->SetColor(255, 255, 0); // (255,255,0) is yellow
 
   // Set up data mapper for interesting particles
-  
+  vtkPolyData* baryonFilterOutput = static_cast<vtkPolyData*> (baryonFilter->GetOutput());
+  kernel->SetSpatialStep(0.04);
+  kernel->SetDimension(3);
+  kernel->SetMassArray(baryonFilterOutput->GetPointData()->GetArray("mass"));
+  kernel->SetDensityArray(baryonFilterOutput->GetPointData()->GetArray("rho"));
+
+  source->SetDimensions(dimensions);
+
+  vtkNew<vtkStructuredGrid> actualSource;
+  actualSource->DeepCopy(source);
+  double sourcePoint[3];
+  actualSource->GetPoint(0, sourcePoint);
+  printf("Source is at %lf %lf %lf\n", sourcePoint[0], sourcePoint[1], sourcePoint[2]);
+
+  // Onto what we interpolate
+  interpolator->SetInputData(actualSource);
+
+  // Actual input to interpolate
+  // interpolator->SetSourceData(baryonFilter->GetOutput());
+  interpolator->SetSourceConnection(baryonFilter->GetOutputPort());
+  interpolator->AddExcludedArray("vx");
+  interpolator->AddExcludedArray("vz");
+  interpolator->AddExcludedArray("vy");
+  interpolator->AddExcludedArray("id");
+
+  interpolator->SetMassArrayName("mass");
+  interpolator->SetDensityArrayName("rho");
+  interpolator->SetKernel(kernel);
+  interpolator->Update();
+
+  vtkNew<vtkGlyph3D> sphGlyph;
+  sphGlyph->SetSourceConnection(singlePointSource->GetOutputPort());
+  sphGlyph->SetInputConnection(interpolator->GetOutputPort());
+  sphGlyph->Update();
+
+  vtkNew<vtkSmoothPolyDataFilter> smoothFilter;
+  smoothFilter->SetInputConnection(sphGlyph->GetOutputPort());
+  smoothFilter->SetNumberOfIterations(50);
+  smoothFilter->SetConvergence(0.4);
+  smoothFilter->SetRelaxationFactor(0.1);
+  smoothFilter->FeatureEdgeSmoothingOff();
+  smoothFilter->BoundarySmoothingOn();
+  smoothFilter->Update();
+
+  // Convert the vtkPolyData to vtkImageData
+  // the vtkImageData has its origin at the same point as the structued points have their origin
+  polyDataToImageDataAlgorithm->SetInputConnection(smoothFilter->GetOutputPort());
+  std::copy(dimensions, dimensions + 3, polyDataToImageDataAlgorithm->dimensions);
+  std::copy(sphOrigin, sphOrigin + 3, polyDataToImageDataAlgorithm->sphOrigin);
+  std::copy(sphVolumeLengths, sphVolumeLengths + 3, polyDataToImageDataAlgorithm->volumeLengths);
+  polyDataToImageDataAlgorithm->Update();
+
+  volumeProperty->SetColor(GetSPHLUT());
+  volumeProperty->SetScalarOpacity(opacityFunction);
+  volumeProperty->SetInterpolationTypeToLinear();
+
+  volumeMapper->SetInputConnection(polyDataToImageDataAlgorithm->GetOutputPort());
+  volumeMapper->SetInterpolationModeToCubic();
+  volumeMapper->ComputeNormalFromOpacityOff();
+  volumeMapper->InteractiveAdjustSampleDistancesOff();
+  volumeMapper->AutoAdjustSampleDistancesOff();
+
+  volume->SetCoordinateSystemToWorld();
+  volume->SetMapper(volumeMapper);
+  volume->SetProperty(volumeProperty);
+  volume->SetOrigin(sphOrigin);
+
+  renderer->AddVolume(volume);
 
   // Now setup some GUI/Interaction elements
   // create the scalarBarWidget
@@ -305,6 +437,7 @@ void VisCos::SetupPipeline() {
 
   renderer->AddActor(manyParticlesActor);
   renderer->AddActor(starParticlesActor);
+  renderer->AddActor(markedParticlesActor);
 
   // Scalar bar for the particle colors when showing the temperature
   scalarBarActor->SetOrientationToVertical();
@@ -316,13 +449,13 @@ void VisCos::SetupPipeline() {
 
   // This is the camera
   float scale = 50;
-  // camera->SetFocalDistance(0.1);
-  camera->SetPosition(scale * 3.24, scale * 2.65, scale * 4.09);
+  // camera->SetPosition(scale * 3.24, scale * 2.65, scale * 4.09);
+  camera->SetPosition(28, 67.7, 45.6);
   camera->SetFocalPoint(scale * 0.51, scale * 0.71, scale * 0.78);
+  camera->SetViewAngle(30);
   camera->SetFocalDisk(1.0);
-  camera->SetEyeAngle(30);
-  camera->Zoom(1.0);
-  // camera->SetFocalDistance(1.0);
+  camera->SetEyeAngle(2);
+  camera->SetFocalDistance(0.0);
   camera->SetViewUp(-0.27, 0.91, -0.31);
 
   renderer->SetActiveCamera(camera);
@@ -332,10 +465,68 @@ void VisCos::SetupPipeline() {
   keyboardInteractorStyle->renderWindow = this->renderWindow;
   renderWindowInteractor->SetRenderWindow(this->renderWindow);
 
+  // Add the focal point as marked point
+  UpdateFP();
+
   // Set initial value on the sliderWidget
   reinterpret_cast<vtkSliderRepresentation *>(
       this->timeSliderWidget->GetRepresentation())
       ->SetValue((double)this->active_timestep);
+}
+
+void VisCos::UpdateFP() {
+  markedPoints->SetPoint(0, camera->GetFocalPoint());
+  markedDataMapper->Modified();
+  markedParticlesActor->Modified();
+  markedGlyph3D->Modified();
+  markedGlyph3D->Update();
+}
+
+void VisCos::AddMarkedPoint(double pos[3]) {
+  markedPoints->InsertNextPoint(pos);
+  markedDataMapper->Modified();
+  markedParticlesActor->Modified();
+  markedGlyph3D->Modified();
+  markedGlyph3D->Update();
+}
+
+double *VisCos::GetSPHOrientation() {
+  return this->volume->GetOrientation();
+}
+
+bool VisCos::IsSPHOn() {
+  return this->renderer->GetVolumes()->GetNumberOfItems() > 0;
+}
+
+void VisCos::EnableSPH() {
+  this->renderer->AddVolume(volume);
+
+  this->sphParticlesActor->SetVisibility(1);
+  this->renderer->Modified();
+  this->renderWindow->Render();
+}
+
+void VisCos::DisableSPH() {
+  this->renderer->RemoveVolume(volume);
+  this->renderer->Modified();
+  this->renderWindow->Render();
+}
+
+void VisCos::UpdateSPH() {
+  double spacing[3];
+  spacing[0] = sphVolumeLengths[0] / dimensions[0];
+  spacing[1] = sphVolumeLengths[1] / dimensions[1];
+  spacing[2] = sphVolumeLengths[2] / dimensions[2];
+
+  source = GetSPHStructuredGrid(dimensions, spacing, sphOrigin);
+  std::copy(sphOrigin, sphOrigin + 3, polyDataToImageDataAlgorithm->sphOrigin);
+  polyDataToImageDataAlgorithm->Modified();
+
+  interpolator->SetInputData(source);
+
+  interpolator->Update();
+  renderer->Modified();
+  renderer->Render();
 }
 
 void VisCos::moreSteps() {
@@ -662,4 +853,10 @@ float VisCos::GetMovementAlpha() {
 
 void VisCos::SetMovementAlpha(float movementAlpha) {
   this->movementAlpha = movementAlpha;
+}
+
+void VisCos::SetSPHCenter(double pos[3]) {
+  this->sphOrigin[0] = pos[0] - 0.5 * sphVolumeLengths[0];
+  this->sphOrigin[1] = pos[1] - 0.5 * sphVolumeLengths[1];
+  this->sphOrigin[2] = pos[2] - 0.5 * sphVolumeLengths[2];
 }

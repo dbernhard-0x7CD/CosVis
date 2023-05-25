@@ -5,7 +5,6 @@
 
 class vtkCamera;
 class VisCos;
-class vtkActor;
 class vtkPolyDataMapper;
 class vtkRenderWindow;
 

@@ -5,7 +5,7 @@
 #include <vtkMath.h>
 #include <vtkObjectFactory.h> // for vtkStandardNewMacro
 #include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h> // for vtkRenderWindowIntera...
+#include <vtkRenderWindowInteractor.h>          // for vtkRenderWindowIntera...
 
 #include "../interactive/KeyPressInteractorStyle.hxx"
 #include "../app/VisCos.hpp"
@@ -55,6 +55,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     camera->SetFocalPoint(newFpt);
     camera->Modified();
 
+    app->UpdateFP();
     renderWindow->Render();
     return;
   }
@@ -83,6 +84,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     camera->SetFocalPoint(newFpt);
     camera->Modified();
 
+    app->UpdateFP();
     renderWindow->Render();
     return;
   }
@@ -113,6 +115,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     camera->SetFocalPoint(newFpt);
     camera->Modified();
 
+    app->UpdateFP();
     renderWindow->Render();
     return;
   }
@@ -143,6 +146,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     camera->SetFocalPoint(newFpt);
     camera->Modified();
 
+    app->UpdateFP();
     renderWindow->Render();
     return;
   }
@@ -166,6 +170,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     camera->Yaw(2);
     camera->Modified();
 
+    app->UpdateFP();
     renderWindow->Render();
     return;
   }
@@ -174,6 +179,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     camera->Yaw(-1);
     camera->Modified();
 
+    app->UpdateFP();
     renderWindow->Render();
     return;
   }
@@ -182,6 +188,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     camera->Pitch(1);
     camera->Modified();
 
+    app->UpdateFP();
     renderWindow->Render();
     return;
   }
@@ -189,6 +196,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     camera->Pitch(-1);
     camera->Modified();
 
+    app->UpdateFP();
     renderWindow->Render();
     return;
   }
@@ -288,16 +296,63 @@ void KeyPressInteractorStyle::OnKeyPress() {
     printf("  * '4' to toggle baryon star forming\n");
     printf("  * '2' to toggle AGN particles\n");
     printf("  * 'n' to print the current position\n");
+    printf("  * 'm' to jump to the SPH viewpoint\n");
+    printf("  * 'g' to set the new center for SPH\n");
+    printf("  * ',' to toggle SPH for the set position\n");
     printf("  * 'z' to decrease the movement speed\n");
     printf("  * 'x' to INCREASE the movement speed\n");
     printf("  * Quit with 'q'\n");
+    return;
   }
 
   if (key == "n") {
     double pos[3];
+    double *orientation;
     this->camera->GetPosition(pos);
+    orientation = this->camera->GetOrientation();
 
     printf("Current position is %f %f %f\n", pos[0], pos[1], pos[2]);
+    printf("Current orientation is %f %f %f\n", orientation[0], orientation[1], orientation[2]);
+    this->app->UpdateSPH();
+    this->renderWindow->Render();
+    return;
+  }
+
+  // Move to SPH position
+  if (key == "m") {
+    this->camera->SetPosition(18.7, 37.36, 35.96);
+    this->camera->SetFocalPoint(19.4781, 42.6025, 36.4189 );
+    this->camera->SetViewUp(0.976, -0.218, -0.0255);
+    this->camera->SetViewAngle(30);
+    this->camera->SetFocalDisk(1.0);
+    this->camera->SetEyeAngle(2);
+    this->camera->SetFocalDistance(0.0);
+    this->camera->Modified();
+
+    this->app->UpdateFP();
+    this->renderWindow->Render();
+    return;
+  }
+
+  if (key == "comma") {
+    if (this->app->IsSPHOn()) {
+      this->app->DisableSPH();
+      printf("Disabled SPH for the set point\n");
+    } else {
+      this->app->EnableSPH();
+      printf("Enabling SPH for the set point\n");
+    }
+    return;
+  }
+
+  if (key == "g") {
+    double pos[3] = { 0.0, 0.0, 0.0 };
+    this->camera->GetFocalPoint(pos);
+    this->app->SetSPHCenter(pos);
+
+    this->app->UpdateSPH();
+
+    this->renderWindow->Render();
     return;
   }
 

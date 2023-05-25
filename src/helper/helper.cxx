@@ -1,5 +1,11 @@
+#include <assert.h>
+
 #include <vtkLookupTable.h>
 #include <vtkNew.h>
+#include <vtkColorTransferFunction.h>
+#include <vtkStructuredGrid.h>
+#include <vtkPoints.h>
+#include <vtkType.h>
 
 vtkNew<vtkLookupTable> GetTemperatureLUT() {
   // LUT for coloring the particles
@@ -83,4 +89,35 @@ vtkNew<vtkLookupTable> GetClusterLUT() {
   lut->SetBelowRangeColor(0.0, 0.0, 0.0, 1.0);
 
   return lut;
+}
+
+vtkNew<vtkColorTransferFunction> GetSPHLUT() {
+  vtkNew<vtkColorTransferFunction> lut;
+  lut->SetColorSpaceToHSV();
+  lut->AddHSVPoint(0, 0.231373, 0.298039, 0.752941);
+  lut->AddHSVPoint(50000, 0.865003, 0.865003, 0.865003);
+  lut->AddHSVPoint(100000, 0.705882, 0.0156863, 0.14902);
+  lut->ClampingOn();
+
+  lut->Build();
+
+  return lut;
+}
+
+vtkNew<vtkStructuredGrid> GetSPHStructuredGrid(int dimensions[3], double spacing[3], double sphOrigin[3]) {
+  vtkNew<vtkPoints> sphPoints;
+  vtkNew<vtkStructuredGrid> grid;
+
+  for (vtkIdType i = 0; i < dimensions[0]; i++) {
+    for (vtkIdType j = 0; j < dimensions[1]; j++) {
+      for (vtkIdType k = 0; k < dimensions[2]; k++) {
+        sphPoints->InsertNextPoint(sphOrigin[0] + spacing[0]*k, sphOrigin[1] + spacing[1] * j, sphOrigin[2] + i * spacing[2]);
+      }
+    }
+  }
+
+  assert (sphPoints->GetNumberOfPoints() == dimensions[0] * dimensions[1] * dimensions[2]);
+
+  grid->SetPoints(sphPoints);
+  return grid;
 }

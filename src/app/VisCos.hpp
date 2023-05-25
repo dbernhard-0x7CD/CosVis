@@ -1,28 +1,35 @@
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
+#include <map>
 
 #include <vtkActor.h>
 #include <vtkCamera.h>
 #include <vtkGlyph3D.h>
+#include <vtkLookupTable.h>
 #include <vtkNamedColors.h>
 #include <vtkNew.h>
 #include <vtkPointSource.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkProgrammableFilter.h>
-#include <vtkProperty.h>
+#include <vtkPiecewiseFunction.h>
 #include <vtkRenderWindow.h>
 #include <vtkSphereSource.h>
+#include <vtkStructuredGrid.h>
+#include <vtkSPHInterpolator.h>
+#include <vtkSPHQuinticKernel.h>
+#include <vtkImageData.h>
+#include <vtkPoints.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
 #include <vtkScalarBarActor.h>
 #include <vtkScalarBarWidget.h>
 #include <vtkSliderRepresentation2D.h>
 #include <vtkSliderWidget.h>
-#include <vtkXMLPolyDataReader.h>
+#include <vtkSmartVolumeMapper.h>
+#include <vtkVolume.h>
+#include <vtkVolumeProperty.h>
 
 #include "../helper/helper.hxx"
 #include "../interactive/KeyPressInteractorStyle.hxx"
@@ -30,10 +37,13 @@
 #include "../interactive/ResizeWindowCallback.hxx"
 #include "../processing/AssignClusterFilter.hxx"
 #include "../processing/ParticleTypeFilter.hxx"
+#include "../processing/StarFilter.hxx"
+#include "../processing/BaryonFilter.hxx"
 #include "../processing/CalculateTemperatureFilter.hxx"
+#include "../processing/PolyDataToImageDataAlgorithm.hxx"
 
-class vtkCamera;
-class KeyPressInteractorStyle;
+class vtkTextActor;
+class vtkXMLPolyDataReader;
 
 enum ParticleType { ALL, DARK_MATTER, BARYON };
 
@@ -51,6 +61,13 @@ private:
   // Multiplicator for movement and angle operations
   float movementAlpha = 0.8;
 
+  // SPH properties (found with paraview)
+  double sphOrigin[3] = { 19.4783, 42.6025, 36.4189 };
+  double sphVolumeLengths[3] = { 2, 2, 2 };
+  double sphOrientation[3] = { 0, 0, 1.0 };
+  // Resolution of the SPH box
+  int dimensions[3] = { 140, 140, 140 };
+
   std::string background_color;
   std::string data_folder_path;
   std::string cluster_path;
@@ -64,15 +81,17 @@ private:
   vtkNew<vtkPointSource> singlePointSource;
   vtkNew<vtkSphereSource> sphereSource;
 
+  // For debugging stuff
+  vtkNew<vtkPoints> markedPoints; // the 0th point is FP
+  vtkNew<vtkPolyData> markedData;
+
   // The mapper is responsible for pushing the geometry into the graphics
   // library. It may also do color mapping, if scalars or other attributes are
   // defined.
   vtkNew<vtkPolyDataMapper> dataMapper;
+  vtkNew<vtkPolyDataMapper> markedDataMapper;
+  vtkNew<vtkPolyDataMapper> sphDataMapper;
   vtkNew<vtkPolyDataMapper> starDataMapper;
-
-  vtkNew<vtkPolyData> importantPointsData;
-  vtkNew<vtkPolyData> baryonData;
-  vtkNew<vtkPolyData> starData;
 
   vtkNew<vtkLookupTable> tempLUT = GetTemperatureLUT();
   vtkNew<vtkLookupTable> clusterLUT = GetClusterLUT();
@@ -82,7 +101,9 @@ private:
 
   // Actors
   vtkNew<vtkActor> manyParticlesActor;
+  vtkNew<vtkActor> sphParticlesActor;
   vtkNew<vtkActor> starParticlesActor;
+  vtkNew<vtkActor> markedParticlesActor;
 
   // Visual stuff
   vtkNew<vtkRenderWindow> renderWindow;
@@ -99,14 +120,32 @@ private:
   AssignClusterParams clusterFilterParams;
   vtkNew<vtkProgrammableFilter> clusterFilter;
 
-  particleTypeFilterParams particleFilterParams;
+  ParticleTypeFilterParams particleFilterParams;
   vtkNew<vtkProgrammableFilter> particleTypeFilter;
+
+  StarFilterParams starFilterParams;
+  vtkNew<vtkProgrammableFilter> starFilter;
+
+  BaryonFilterParams baryonFilterParams;
+  vtkNew<vtkProgrammableFilter> baryonFilter;
 
   // Various
   vtkNew<vtkGlyph3D> glyph3D;
   vtkNew<vtkGlyph3D> starGlyph3D;
+  vtkNew<vtkGlyph3D> markedGlyph3D;
   vtkNew<vtkCamera> camera;
   vtkNew<KeyPressInteractorStyle> keyboardInteractorStyle;
+
+  // Used for SPH
+  vtkNew<vtkSPHQuinticKernel> kernel;
+  vtkNew<vtkStructuredGrid> source;
+  vtkNew<vtkSPHInterpolator> interpolator;
+  vtkNew<vtkVolumeProperty> volumeProperty;
+  vtkNew<vtkSmartVolumeMapper> volumeMapper;
+  vtkNew<vtkVolume> volume;
+  vtkNew<PolyDataToImageDataAlgorithm> polyDataToImageDataAlgorithm;
+  vtkNew<vtkImageData> imageData;
+  vtkNew<vtkPiecewiseFunction> opacityFunction;
 
   vtkNew<TimeSliderCallback> timeSliderCallback;
   vtkNew<ResizeWindowCallback> resizeCallback;
@@ -170,6 +209,17 @@ public:
 
   float GetMovementAlpha();
   void SetMovementAlpha(float movementAlpha);
+
+  void SetSPHCenter(double pos[3]);
+  bool IsSPHOn();
+  void EnableSPH();
+  void DisableSPH();
+  void UpdateSPH();
+
+  void UpdateFP();
+  void AddMarkedPoint(double pos[3]);
+  void SetSPHOrientation(double *orient);
+  double *GetSPHOrientation();
 
   void UpdateGUIElements();
 

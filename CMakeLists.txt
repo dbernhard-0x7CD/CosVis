@@ -12,6 +12,7 @@ find_package(VTK COMPONENTS
   CommonCore
   CommonDataModel
   FiltersSources
+  FiltersPoints
   FiltersModeling
   FiltersProgrammable
   IOXML
@@ -23,6 +24,7 @@ find_package(VTK COMPONENTS
   RenderingGL2PSOpenGL2
   RenderingOpenGL2
   InteractionWidgets
+  RenderingVolumeOpenGL2
 )
 
 add_executable(${PROJECT_NAME}
@@ -35,7 +37,11 @@ add_executable(${PROJECT_NAME}
   ./src/processing/CalculateTemperatureFilter.cxx
   ./src/processing/ParticleTypeFilter.cxx
   ./src/processing/AssignClusterFilter.cxx
-  ./src/data/Loader.cxx)
+  ./src/processing/StarFilter.cxx
+  ./src/processing/BaryonFilter.cxx
+  ./src/processing/PolyDataToImageDataAlgorithm.cxx
+  ./src/data/Loader.cxx
+)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 
