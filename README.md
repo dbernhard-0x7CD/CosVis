@@ -3,7 +3,7 @@
 
 
 # Demo
-https://raw.githubusercontent.com/dbernhard-0x7CD/CosVis/main/doc/videos/Collision.mp4
+![Gif](https://github.com/dbernhard-0x7CD/CosVis/blob/main/doc/videos/Collsision.gif?raw=true)
 
 ## Setup
 
