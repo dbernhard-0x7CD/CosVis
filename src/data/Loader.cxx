@@ -5,6 +5,7 @@
 #include <stdexcept> // for runtime_error
 #include <string>
 #include <vector>
+// IWYU pragma: no_include <bits/chrono.h>
 
 namespace fs = std::filesystem;
 
