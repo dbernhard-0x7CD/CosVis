@@ -30,7 +30,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
   vtkRenderWindowInteractor *rwi = this->Interactor;
   std::string key = rwi->GetKeySym();
 
-  if (key == "Up") {
+  if (key == "w") {
     double pt[3];
     double fpt[3];
     camera->GetPosition(pt);
@@ -59,7 +59,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
-  if (key == "Down") {
+  if (key == "s") {
     double pt[3];
     double fpt[3];
     camera->GetPosition(pt);
@@ -87,7 +87,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
-  if (key == "Left") {
+  if (key == "a") {
     double pt[3];
     double fpt[3];
     camera->GetPosition(pt);
@@ -117,7 +117,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
-  if (key == "Right") {
+  if (key == "d") {
     double pt[3];
     double fpt[3];
     camera->GetPosition(pt);
@@ -162,7 +162,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
-  if (key == "a") {
+  if (key == "Left") {
     camera->Yaw(2);
     camera->Modified();
 
@@ -170,7 +170,7 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
-  if (key == "d") {
+  if (key == "Right") {
     camera->Yaw(-1);
     camera->Modified();
 
@@ -178,14 +178,14 @@ void KeyPressInteractorStyle::OnKeyPress() {
     return;
   }
 
-  if (key == "w") {
+  if (key == "Up") {
     camera->Pitch(1);
     camera->Modified();
 
     renderWindow->Render();
     return;
   }
-  if (key == "s") {
+  if (key == "Down") {
     camera->Pitch(-1);
     camera->Modified();
 
@@ -273,8 +273,8 @@ void KeyPressInteractorStyle::OnKeyPress() {
   // Print keyboard shortcuts with "h" (help)
   if (key == "h") {
     printf("Keyboard keybindings:\n");
-    printf("  * Move camera with arrow keys\n");
-    printf("  * Look around with 'w,a,s,d'\n");
+    printf("  * w,a,s,d to move around\n");
+    printf("  * Arrow-Keys to look around\n");
     printf("  * Change amount of steps taken for moving to a timestep with '[' and ']'\n");
     printf("  * 't' to show the temperature\n");
     printf("  * 'c' to show the clustering\n");
