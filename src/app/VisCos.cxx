@@ -606,8 +606,10 @@ void VisCos::hideBaryonStar() {
 
 void VisCos::toggleBaryonStar() {
   if (this->particleFilterParams.current_filter & static_cast<uint16_t>(Selector::BARYON_STAR)) {
+    this->starParticlesActor->VisibilityOff();
     hideBaryonStar();
   } else {
+    this->starParticlesActor->VisibilityOn();
     showBaryonStar();
   }
 }
