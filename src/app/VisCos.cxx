@@ -402,7 +402,7 @@ void VisCos::SetupPipeline() {
 
   volumeMapper->SetInputConnection(polyDataToImageDataAlgorithm->GetOutputPort());
   volumeMapper->SetInterpolationModeToCubic();
-  volumeMapper->ComputeNormalFromOpacityOff();
+  // volumeMapper->ComputeNormalFromOpacityOff();
   volumeMapper->InteractiveAdjustSampleDistancesOff();
   volumeMapper->AutoAdjustSampleDistancesOff();
 
