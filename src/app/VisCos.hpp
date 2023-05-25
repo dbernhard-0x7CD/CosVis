@@ -138,7 +138,7 @@ private:
 
   // Used for SPH
   vtkNew<vtkSPHQuinticKernel> kernel;
-  vtkNew<vtkStructuredGrid> source;
+  vtkStructuredGrid* source;
   vtkNew<vtkSPHInterpolator> interpolator;
   vtkNew<vtkVolumeProperty> volumeProperty;
   vtkNew<vtkSmartVolumeMapper> volumeMapper;
