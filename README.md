@@ -2,6 +2,9 @@
 # Repository for the Visualization of the Cosmology dataset
 
 
+# Demo
+https://raw.githubusercontent.com/dbernhard-0x7CD/CosVis/main/doc/videos/Collision.mp4
+
 ## Setup
 
 * Make sure that the `data/` folder contains the extracted `*.vtp` files
@@ -31,18 +34,15 @@ python ./python_scripts/run_clustering.py
 ```
 
 # TODO
-* SPH (or alternative)
-* Highlight AGNs and [VTK]
+* Highlight AGNs [VTK]
 * animation in vtk [CPP]
 * particle tracer (center of galaxies)?
  * [maybe drop] create filter which scales the points to their actual location (via cosmological scale factor 'a') [CPP]
     * fix camera position and zoom away as time progresses (scale with a) [CPP]
     * needs background image
 
-# TO ASK
-* 9th bit is only for dark-matter, this makes no sense
- 
 # DONE
+* SPH (or alternative)
 * highlight Star forming particles 
 * temperature in log [CPP]
    * does not look that interesting in paraview
