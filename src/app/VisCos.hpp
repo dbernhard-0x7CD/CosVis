@@ -46,10 +46,10 @@ private:
   int active_timestep;
 
   // Number of steps to take when the slider was moved
-  int steps = 100;
+  int steps = 40;
 
   // Multiplicator for movement and angle operations
-  float movementAlpha = 1.0;
+  float movementAlpha = 0.8;
 
   std::string background_color;
   std::string data_folder_path;
