@@ -4,9 +4,9 @@
 #include <vtkLookupTable.h>
 #include <vtkStructuredGrid.h>
 
-vtkNew<vtkLookupTable> GetTemperatureLUT();
-vtkNew<vtkLookupTable> GetClusterLUT();
-vtkNew<vtkLookupTable> GetPhiLUT();
+vtkSmartPointer<vtkLookupTable> GetTemperatureLUT();
+vtkSmartPointer<vtkLookupTable> GetClusterLUT();
+vtkSmartPointer<vtkLookupTable> GetPhiLUT();
 
-vtkNew<vtkColorTransferFunction> GetSPHLUT();
-vtkNew<vtkStructuredGrid> GetSPHStructuredGrid(int dimensions[3], double spacing[3], double sphOrigin[3]);
+vtkSmartPointer<vtkColorTransferFunction> GetSPHLUT();
+vtkSmartPointer<vtkStructuredGrid> GetSPHStructuredGrid(int dimensions[3], double spacing[3], double sphOrigin[3]);

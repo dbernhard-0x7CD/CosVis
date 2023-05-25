@@ -75,13 +75,6 @@ VisCos::VisCos(int initial_active_timestep, std::string data_folder_path,
   opacityFunction->AddPoint(2000, 0.999);
   opacityFunction->AddPoint(184026, 1.0);
   opacityFunction->ClampingOn();
-
-  double spacing[3];
-  spacing[0] = sphVolumeLengths[0] / dimensions[0];
-  spacing[1] = sphVolumeLengths[1] / dimensions[1];
-  spacing[2] = sphVolumeLengths[2] / dimensions[2];
-
-  source = GetSPHStructuredGrid(dimensions, spacing, sphOrigin);
 }
 
 void VisCos::Load() {
@@ -350,16 +343,15 @@ void VisCos::SetupPipeline() {
   kernel->SetMassArray(baryonFilterOutput->GetPointData()->GetArray("mass"));
   kernel->SetDensityArray(baryonFilterOutput->GetPointData()->GetArray("rho"));
 
-  source->SetDimensions(dimensions);
+  double spacing[3];
+  spacing[0] = sphVolumeLengths[0] / dimensions[0];
+  spacing[1] = sphVolumeLengths[1] / dimensions[1];
+  spacing[2] = sphVolumeLengths[2] / dimensions[2];
 
-  vtkNew<vtkStructuredGrid> actualSource;
-  actualSource->DeepCopy(source);
-  double sourcePoint[3];
-  actualSource->GetPoint(0, sourcePoint);
-  printf("Source is at %lf %lf %lf\n", sourcePoint[0], sourcePoint[1], sourcePoint[2]);
+  source = GetSPHStructuredGrid(dimensions, spacing, sphOrigin);
 
   // Onto what we interpolate
-  interpolator->SetInputData(actualSource);
+  interpolator->SetInputData(source);
 
   // Actual input to interpolate
   // interpolator->SetSourceData(baryonFilter->GetOutput());

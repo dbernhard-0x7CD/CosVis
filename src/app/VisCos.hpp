@@ -27,6 +27,7 @@
 #include <vtkScalarBarWidget.h>
 #include <vtkSliderRepresentation2D.h>
 #include <vtkSliderWidget.h>
+#include <vtkSmartPointer.h>
 #include <vtkSmartVolumeMapper.h>
 #include <vtkVolume.h>
 #include <vtkVolumeProperty.h>
@@ -93,9 +94,9 @@ private:
   vtkNew<vtkPolyDataMapper> sphDataMapper;
   vtkNew<vtkPolyDataMapper> starDataMapper;
 
-  vtkNew<vtkLookupTable> tempLUT = GetTemperatureLUT();
-  vtkNew<vtkLookupTable> clusterLUT = GetClusterLUT();
-  vtkNew<vtkLookupTable> phiLUT = GetPhiLUT();
+  vtkSmartPointer<vtkLookupTable> tempLUT = GetTemperatureLUT();
+  vtkSmartPointer<vtkLookupTable> clusterLUT = GetClusterLUT();
+  vtkSmartPointer<vtkLookupTable> phiLUT = GetPhiLUT();
 
   vtkNew<vtkRenderer> renderer;
 
@@ -138,7 +139,7 @@ private:
 
   // Used for SPH
   vtkNew<vtkSPHQuinticKernel> kernel;
-  vtkStructuredGrid* source;
+  vtkSmartPointer<vtkStructuredGrid> source;
   vtkNew<vtkSPHInterpolator> interpolator;
   vtkNew<vtkVolumeProperty> volumeProperty;
   vtkNew<vtkSmartVolumeMapper> volumeMapper;

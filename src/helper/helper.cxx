@@ -7,7 +7,7 @@
 #include <vtkPoints.h>
 #include <vtkType.h>
 
-vtkNew<vtkLookupTable> GetTemperatureLUT() {
+vtkSmartPointer<vtkLookupTable> GetTemperatureLUT() {
   // LUT for coloring the particles
   vtkNew<vtkLookupTable> lut;
 
@@ -29,7 +29,7 @@ vtkNew<vtkLookupTable> GetTemperatureLUT() {
   return lut;
 }
 
-vtkNew<vtkLookupTable> GetPhiLUT() {
+vtkSmartPointer<vtkLookupTable> GetPhiLUT() {
   // LUT for coloring the particles
   vtkNew<vtkLookupTable> lut;
 
@@ -43,7 +43,7 @@ vtkNew<vtkLookupTable> GetPhiLUT() {
   return lut;
 }
 
-vtkNew<vtkLookupTable> GetClusterLUT() {
+vtkSmartPointer<vtkLookupTable> GetClusterLUT() {
   vtkNew<vtkLookupTable> lut;
 
   lut->SetTableRange(0.0, 26.0);
@@ -91,7 +91,7 @@ vtkNew<vtkLookupTable> GetClusterLUT() {
   return lut;
 }
 
-vtkNew<vtkColorTransferFunction> GetSPHLUT() {
+vtkSmartPointer<vtkColorTransferFunction> GetSPHLUT() {
   vtkNew<vtkColorTransferFunction> lut;
   lut->SetColorSpaceToHSV();
   lut->AddHSVPoint(0, 0.231373, 0.298039, 0.752941);
@@ -104,9 +104,11 @@ vtkNew<vtkColorTransferFunction> GetSPHLUT() {
   return lut;
 }
 
-vtkNew<vtkStructuredGrid> GetSPHStructuredGrid(int dimensions[3], double spacing[3], double sphOrigin[3]) {
+vtkSmartPointer<vtkStructuredGrid> GetSPHStructuredGrid(int dimensions[3], double spacing[3], double sphOrigin[3]) {
   vtkNew<vtkPoints> sphPoints;
   vtkNew<vtkStructuredGrid> grid;
+
+  grid->SetDimensions(dimensions);
 
   for (vtkIdType i = 0; i < dimensions[0]; i++) {
     for (vtkIdType j = 0; j < dimensions[1]; j++) {
