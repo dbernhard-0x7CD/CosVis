@@ -513,7 +513,10 @@ void VisCos::UpdateSPH() {
   spacing[2] = sphVolumeLengths[2] / dimensions[2];
 
   source = GetSPHStructuredGrid(dimensions, spacing, sphOrigin);
-  std::copy(sphOrigin, sphOrigin + 3, polyDataToImageDataAlgorithm->sphOrigin);
+  polyDataToImageDataAlgorithm->sphOrigin[0] = sphOrigin[0];
+  polyDataToImageDataAlgorithm->sphOrigin[1] = sphOrigin[1];
+  polyDataToImageDataAlgorithm->sphOrigin[2] = sphOrigin[2];
+
   polyDataToImageDataAlgorithm->Modified();
 
   interpolator->SetInputData(source);
