@@ -337,11 +337,6 @@ void VisCos::SetupPipeline() {
   markedParticlesActor->GetProperty()->SetPointSize(20.0);
   markedParticlesActor->GetProperty()->SetColor(0, 255, 0); // green
 
-  double o[3];
-  manyParticlesActor->GetOrientation(o);
-  printf("manyParticlesActor Orientation: %lf %lf %lf\n", o[0], o[1], o[2]);
-  int cs = manyParticlesActor->GetCoordinateSystem();
-  printf("manyParticlesActor cs: %d\n", cs);
   manyParticlesActor->SetMapper(dataMapper);
 
   // starParticlesActor->SetOrigin(0,0,0);
@@ -411,7 +406,6 @@ void VisCos::SetupPipeline() {
   volumeMapper->InteractiveAdjustSampleDistancesOff();
   volumeMapper->AutoAdjustSampleDistancesOff();
 
-  volume->SetCoordinateSystemToWorld();
   volume->SetMapper(volumeMapper);
   volume->SetProperty(volumeProperty);
   volume->SetOrigin(sphOrigin);
