@@ -1,11 +1,8 @@
 #include <cstdint> // for uint16_t
 #include <stdio.h>
 
-#include <vtkAlgorithmOutput.h>
-#include <vtkDataArray.h>
 #include <vtkDoubleArray.h>
 #include <vtkGenericDataArray.txx> // for vtkGenericDataArray::InsertNextValue
-#include <vtkInformation.h>
 #include <vtkIntArray.h> // for vtkIntArray
 #include <vtkNew.h>
 #include <vtkPointData.h>

@@ -1,3 +1,4 @@
+#include <cstdint> // for uint16_t
 #include <stdio.h>
 
 #include <vtkAlgorithmOutput.h>
@@ -5,6 +6,7 @@
 #include <vtkDoubleArray.h>
 #include <vtkGenericDataArray.txx> // for vtkGenericDataArray::InsertNextValue
 #include <vtkInformation.h>
+#include <vtkIntArray.h> // for vtkIntArray
 #include <vtkNew.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>   // for vtkPoints
@@ -17,15 +19,19 @@
 #include "ParticleTypeFilter.hxx"
 
 void BaryonFilter(void *arguments) {
-  BaryonFilterParams *input = static_cast<BaryonFilterParams*>(arguments);
+  BaryonFilterParams *input = static_cast<BaryonFilterParams *>(arguments);
 
   vtkPoints *inPts = input->data->GetPoints();
   vtkIdType numPts = inPts->GetNumberOfPoints();
 
-  vtkIntArray *mask = static_cast<vtkIntArray *>(input->data->GetPointData()->GetArray("mask"));
-  vtkDoubleArray *rho = static_cast<vtkDoubleArray *>(input->data->GetPointData()->GetArray("rho"));
-  vtkDoubleArray *mass = static_cast<vtkDoubleArray *>(input->data->GetPointData()->GetArray("mass"));
-  vtkDoubleArray *temperature = static_cast<vtkDoubleArray *>(input->data->GetPointData()->GetArray("Temperature"));
+  vtkIntArray *mask =
+      static_cast<vtkIntArray *>(input->data->GetPointData()->GetArray("mask"));
+  vtkDoubleArray *rho = static_cast<vtkDoubleArray *>(
+      input->data->GetPointData()->GetArray("rho"));
+  vtkDoubleArray *mass = static_cast<vtkDoubleArray *>(
+      input->data->GetPointData()->GetArray("mass"));
+  vtkDoubleArray *temperature = static_cast<vtkDoubleArray *>(
+      input->data->GetPointData()->GetArray("Temperature"));
 
   vtkNew<vtkPoints> baryonPoints;
 

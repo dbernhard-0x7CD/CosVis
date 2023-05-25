@@ -1,11 +1,7 @@
 #pragma once
 
-#include <cstdint>
-
 class vtkPolyData;
-class vtkPolyDataMapper;
 class vtkProgrammableFilter;
-enum class Selector;
 
 struct BaryonFilterParams {
   vtkPolyData *data;

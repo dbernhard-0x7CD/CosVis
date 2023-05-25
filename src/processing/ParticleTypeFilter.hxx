@@ -3,9 +3,7 @@
 #include <cstdint>
 
 class vtkPolyData;
-class vtkPolyDataMapper;
 class vtkProgrammableFilter;
-enum class Selector;
 
 struct ParticleTypeFilterParams {
   vtkPolyData *data;

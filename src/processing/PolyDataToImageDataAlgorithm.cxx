@@ -1,18 +1,17 @@
-#include <stdio.h>
 
-#include <vtkCommand.h>
 #include <vtkDataArray.h>
-#include <vtkDoubleArray.h>
+#include <vtkDataObject.h>           // for vtkDataObject
+#include <vtkDemandDrivenPipeline.h> // for vtkDemandDrivenPipeline
+#include <vtkExecutive.h>            // for vtkExecutive
 #include <vtkImageData.h>
+#include <vtkIndent.h> // for vtkIndent
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
-#include <vtkNew.h>
 #include <vtkObjectFactory.h>
 #include <vtkPointData.h>
 #include <vtkPolyData.h> // for vtkPolyData
-#include <vtkPolyDataMapper.h>
-#include <vtkProgrammableFilter.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
+#include <vtkType.h> // for VTK_DOUBLE, vtkIdType
 
 #include "PolyDataToImageDataAlgorithm.hxx"
 
@@ -133,8 +132,10 @@ int PolyDataToImageDataAlgorithm::RequestData(
   vtkInformation *outInfo = outputVector->GetInformationObject(0);
   vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
 
-  vtkPolyData *input = dynamic_cast<vtkPolyData *>(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkImageData *output = dynamic_cast<vtkImageData *>(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData *input =
+      dynamic_cast<vtkPolyData *>(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkImageData *output =
+      dynamic_cast<vtkImageData *>(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   output->SetDimensions(this->dimensions);
   output->SetSpacing(this->volumeLengths[0] / this->dimensions[0],

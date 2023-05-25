@@ -1,11 +1,13 @@
-#include <stdio.h>
-#include <stdlib.h>
-
+#include <vtkDataArray.h>          // for vtkDataArray
+#include <vtkGenericDataArray.txx> // for vtkGenericDataArray::InsertNextValue
+#include <vtkNew.h>                // for vtkNew
 #include <vtkPointData.h>
+#include <vtkPoints.h>   // for vtkPoints
 #include <vtkPolyData.h> // for vtkPolyData
 #include <vtkProgrammableFilter.h>
 #include <vtkShortArray.h>
-#include <vtkType.h> // for vtkIdType
+#include <vtkType.h>           // for vtkIdType
+#include <vtkTypeInt64Array.h> // for vtkTypeInt64Array
 
 #include "AssignClusterFilter.hxx"
 

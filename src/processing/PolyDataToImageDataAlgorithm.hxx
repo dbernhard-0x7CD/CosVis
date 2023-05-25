@@ -1,6 +1,14 @@
 #pragma once
 
+#include <iosfwd> // for ostream
 #include <vtkAlgorithm.h>
+#include <vtkIOStream.h> // for ostream
+#include <vtkSetGet.h>   // for vtkTypeMacro
+
+class vtkDataObject;
+class vtkIndent;
+class vtkInformation;
+class vtkInformationVector;
 
 class vtkImageData;
 class vtkPolyData;
