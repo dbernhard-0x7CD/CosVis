@@ -12,4 +12,3 @@ struct AssignClusterParams {
 };
 
 void AssignCluster(void *arguments);
-

@@ -726,7 +726,6 @@ void VisCos::UpdateVisbleParticlesText() {
 }
 
 void VisCos::UpdateGUIElements() {
-
   double* d = this->textVisibleParticles->GetPosition();
   int* size = this->renderWindow->GetActualSize();
 
