@@ -642,9 +642,9 @@ void VisCos::Run() {
   renderer->AddActor2D(this->textDarkMatter);
 
   // Register callback
-  timeSliderWidget->AddObserver(vtkCommand::InteractionEvent,
-                                timeSliderCallback);
+  timeSliderWidget->AddObserver(vtkCommand::InteractionEvent, timeSliderCallback);
 
+  // Update the GUI when the window is resized
   renderWindow->AddObserver(vtkCommand::WindowResizeEvent, resizeCallback);
 
   this->UpdateVisbleParticlesText();
