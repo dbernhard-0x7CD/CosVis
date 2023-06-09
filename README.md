@@ -20,7 +20,7 @@ mkdir -p build && cd build && cmake .. && cmake --build .
 
 As we run the clustering via python you need to execute this to generate the cluster data:
 
-```python
+```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
