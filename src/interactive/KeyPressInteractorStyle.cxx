@@ -308,10 +308,13 @@ void KeyPressInteractorStyle::OnKeyPress() {
   if (key == "n") {
     double pos[3];
     double *orientation;
+    double fp[3];
     this->camera->GetPosition(pos);
+    this->camera->GetFocalPoint(fp);
     orientation = this->camera->GetOrientation();
 
     printf("Current position is %f %f %f\n", pos[0], pos[1], pos[2]);
+    printf("Current focalpoint is %f %f %f\n", fp[0], fp[1], fp[2]);
     printf("Current orientation is %f %f %f\n", orientation[0], orientation[1], orientation[2]);
     this->app->UpdateSPH();
     this->renderWindow->Render();

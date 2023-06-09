@@ -434,9 +434,8 @@ void VisCos::SetupPipeline() {
   scalarBarActor->Modified();
 
   // This is the camera
-  float scale = 50;
-  camera->SetPosition(scale * 3.24, scale * 2.65, scale * 4.09);
-  camera->SetFocalPoint(scale * 0.51, scale * 0.71, scale * 0.78);
+  camera->SetPosition(180.8, 162.95, 166.56);
+  camera->SetFocalPoint(37.74, 35.6, 28.46);
   camera->SetViewAngle(30);
   camera->SetFocalDisk(1.0);
   camera->SetEyeAngle(2);
