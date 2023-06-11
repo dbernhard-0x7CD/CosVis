@@ -402,8 +402,6 @@ void VisCos::SetupPipeline() {
   volume->SetProperty(volumeProperty);
   volume->SetOrigin(sphOrigin);
 
-  renderer->AddVolume(volume);
-
   // Now setup some GUI/Interaction elements
   // create the scalarBarWidget
   scalarBarWidget->SetInteractor(renderWindowInteractor);
